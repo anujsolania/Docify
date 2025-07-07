@@ -3,7 +3,7 @@
 function Signup() {
   return (
     <div className="bg-gray-300 min-h-screen flex justify-center items-center" >
-        <div className="bg-white rounded-lg h-1/2 w-[80%] shadow-2xl p-6 sm:w-[60%] lg:w-1/3" >
+        <div className="bg-white rounded-lg h-1/2 w-5/6 shadow-2xl p-6 sm:w-2/3 md:w-1/2 lg:w-1/3" >
         <div className="m-5" >
             <div className="text-4xl font-extrabold flex justify-center" >Get Started</div>
             <div className="text-sky-600 font-medium mt-1 flex justify-center" >Already have an account? <span className="underline" >SignIn</span></div>
