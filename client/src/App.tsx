@@ -3,6 +3,7 @@ import './App.css'
 import Signin from './components/Signin'
 import Signup from './components/Signup'
 import Verify from './components/Verify'
+import Password from './components/Password'
 
 function App() {
 
@@ -14,6 +15,7 @@ function App() {
       <Route path='/signin' element={<Signin/>}></Route>
       <Route path='/verifyemail' element={<Verify/>}></Route>
       <Route path='/verifyemail/:verificationToken' element={<Signup/>}></Route>
+      <Route path='/forgotpassword' element={<Password/>}></Route>
     </Routes>
     </BrowserRouter>
     </>
