@@ -1,67 +1,57 @@
-import axios from "axios"
 import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 
-interface SignupResponse {
+interface SignInResponse {
     message: string
+    token: string
 }
 
-
-function Signup() {
-    const [postInputs,setpostInputs] = useState({
-        name: "",
+function Signin() {
+     const [postInputs,setpostInputs] = useState({
         email: "",
         password: ""
     })
 
-
-    const navigate = useNavigate()
   return (
     <div className="bg-gray-300 min-h-screen flex justify-center items-center" >
-        <div className="bg-white rounded-lg h-[500px] w-[400px] shadow-2xl p-6" >
+        <div className="bg-white rounded-lg h-[400px] w-[400px] shadow-2xl p-6" >
         <div className="m-5" >
             <div className="text-4xl font-extrabold flex justify-center" >Get Started</div>
-            <div className="text-sky-600 font-medium mt-1 flex justify-center" >Already have an account? <Link to={"/signin"} className="underline ml-1"> SignIn </Link></div>
+            <div className="text-sky-600 font-medium mt-1 flex justify-center" >Don't have an account? <Link to={"/signup"} className="underline ml-1"> SignUp </Link></div>
         </div>
         <div className="flex justify-center " >
             <div className="flex flex-col w-[90%] gap-5">
-                <div className="flex flex-col gap-1" >
-                    <div>Name</div>
-                    <input type="text" placeholder="John Doe" className="border border-slate-300 rounded-lg w-full p-2 bg-slate-50"
-                    value={postInputs.name} onChange={(e) => {setpostInputs({
-                        ...postInputs,
-                        name: e.target.value})
-                    }}></input>
-                </div>
                <div className="flex flex-col gap-1" >
                     <div>Email</div>
                     <input type="text" placeholder="abc@gmail.com" className="border border-slate-300 rounded-lg w-full p-2 bg-slate-50"
                     value={postInputs.email} onChange={(e) => {setpostInputs({
                         ...postInputs,
-                        email: e.target.value})
-                    }}></input>
+                        email: e.target.value
+                    })}}></input>
                 </div>
                 <div className="flex flex-col gap-1" >
                     <div>Password</div>
                     <input type="password" placeholder="*******" className="border border-slate-300 rounded-lg w-full p-2 bg-slate-50"
                     value={postInputs.password} onChange={(e) => {setpostInputs({
                         ...postInputs,
-                        password: e.target.value})
-                    }}></input>
+                        password: e.target.value
+                    })}}></input>
                 </div>
-                <div className="mt-1 mb-8">
-                    <button className="w-full bg-sky-600 rounded-lg p-2.5 text-white" 
+                <div className="mt-1">
+                    <button className="w-full bg-sky-600 rounded-lg p-2.5 text-white"
                     onClick={async () => {
                         try {
-                        const response = await axios.post<SignupResponse>(`${import.meta.env.VITE_URL}/api/v1/user/signup`,{
+                        const response = await axios.post<SignInResponse>(`${import.meta.env.VITE_URL}/api/v1/user/signin`,{
                             postInputs
-                        })
+                        },)
+                        const token = response.data.token
+                        sessionStorage.setItem("token",token)
                         alert(response.data.message)
-                        navigate("/verifyemail") 
+                        // navigate("/home") 
                         } catch (error: any) {
                             alert(error.response.data.error)
                         }
-                    }}>Sign Up</button>
+                    }}>Sign In</button>
                 </div>
             </div>
         </div>
@@ -73,4 +63,4 @@ function Signup() {
   )
 }
 
-export default Signup
+export default Signin
