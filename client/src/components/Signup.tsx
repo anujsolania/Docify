@@ -1,10 +1,7 @@
-import axios from "axios"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import AuthService from "../services/user-service"
 
-interface SignupResponse {
-    message: string
-}
 
 
 function Signup() {
@@ -53,10 +50,8 @@ function Signup() {
                     <button className="w-full bg-sky-600 rounded-lg p-2.5 text-white" 
                     onClick={async () => {
                         try {
-                        const response = await axios.post<SignupResponse>(`${import.meta.env.VITE_URL}/api/v1/user/signup`,{
-                            postInputs
-                        })
-                        alert(response.data.message)
+                        const response = await AuthService.signup(postInputs)
+                        alert(response.data.message) 
                         navigate("/verifyemail") 
                         } catch (error: any) {
                             alert(error.response.data.error)

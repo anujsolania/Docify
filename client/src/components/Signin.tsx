@@ -1,10 +1,7 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
-
-interface SignInResponse {
-    message: string
-    token: string
-}
+import type { SignInResponse } from "../interfaces/interfaces"
+import AuthService from "../services/user-service"
 
 function Signin() {
      const [postInputs,setpostInputs] = useState({
@@ -41,9 +38,7 @@ function Signin() {
                     <button className="w-full bg-sky-600 rounded-lg p-2.5 text-white"
                     onClick={async () => {
                         try {
-                        const response = await axios.post<SignInResponse>(`${import.meta.env.VITE_URL}/api/v1/user/signin`,{
-                            postInputs
-                        },)
+                        const response = await AuthService.signin(postInputs)
                         const token = response.data.token
                         sessionStorage.setItem("token",token)
                         alert(response.data.message)
