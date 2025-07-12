@@ -13,6 +13,10 @@ export const signinSchema = z.object({
     password: z.string().trim().min(6,{message: "Password must be at least 6 characters long"} )
 })
 
+export const emailSchema = z.object({
+    email: z.string().email({message: "Invalid email"})
+})
+
 
 export const userValidator = (schema: ZodTypeAny) => {
     return (req: Request, res:Response, next:NextFunction) => {

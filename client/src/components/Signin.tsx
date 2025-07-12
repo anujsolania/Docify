@@ -47,7 +47,7 @@ function Signin() {
                         }
                     }}>Sign In</button>
                     <div className="m-2" >
-                        <Link to={"/fogotpassword"} className="text-md text-sky-600 underline">Forgot Password ?</Link>
+                        <Link to={"/forgotpassword"} className="text-md text-sky-600 underline">Forgot Password ?</Link>
                     </div>
                 </div>
             </div>

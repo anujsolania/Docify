@@ -1,10 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
-
-interface verifyemailResponse {
-    verified: boolean,
-    message: string
-}
+import AuthService from "../services/user-service"
 
 function Verify() {
     const { verificationToken } = useParams()
@@ -14,7 +10,7 @@ function Verify() {
         const verifyemail = async () => {
             if (verificationToken) {
                 try {
-                    const response = await axios.put<verifyemailResponse>(`${import.meta.env}/api/v1/user/verifyemail/${verificationToken}`)
+                    const response = await AuthService.verifyemail(verificationToken)
                     alert(response.data.message)
                     setVerified(response.data.verified)
                 } catch (error: any) {

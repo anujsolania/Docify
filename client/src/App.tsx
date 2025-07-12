@@ -16,6 +16,7 @@ function App() {
       <Route path='/verifyemail' element={<Verify/>}></Route>
       <Route path='/verifyemail/:verificationToken' element={<Signup/>}></Route>
       <Route path='/forgotpassword' element={<Password/>}></Route>
+      <Route path='/resetpassword/:resetpasswordToken' element={<Password/>}></Route>
     </Routes>
     </BrowserRouter>
     </>

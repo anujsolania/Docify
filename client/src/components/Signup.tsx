@@ -14,7 +14,7 @@ function Signup() {
 
     const navigate = useNavigate()
   return (
-    <div className="bg-gray-300 min-h-screen flex justify-center items-center" >
+    <div className="bg-gray-300 min-h-screen flex justify-center items-center">
         <div className="bg-white rounded-lg h-[500px] w-[400px] shadow-2xl p-6" >
         <div className="m-5" >
             <div className="text-4xl font-extrabold flex justify-center" >Get Started</div>

@@ -1,21 +1,21 @@
 
 
-export interface SignupPayload {
-    name: string,
-    email: string,
-    password: string
-}
-
 export interface SignupResponse  {
     message: string
-}
-
-export interface SigninPayload {
-    email: string,
-    password: string
 }
 
 export interface SignInResponse {
     message: string
     token: string
 }
+
+export interface VerifyEmailResponse {
+    verified: boolean,
+    message: string
+}
+
+export interface ForgotPassResponse {
+    message: string
+}
+
+// export type ForgotPasswordPayload = string
