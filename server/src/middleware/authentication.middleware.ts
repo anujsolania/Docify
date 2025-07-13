@@ -56,8 +56,6 @@ export const SigninAuthetication = async (req: CustomRequest,res: Response, next
 
 export const forgotPasswordAuthentication = async (req: CustomRequest, res:Response, next:NextFunction) => {
     const { email } = req.body
-
-    if (!email) return res.status(400).json({error: "Enter your email"})
     
     try {
         const user = await prisma.user.findFirst({

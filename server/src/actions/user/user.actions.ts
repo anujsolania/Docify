@@ -4,6 +4,7 @@ import bcrypt, { compare } from "bcrypt";
 import { SendMail } from "../../smtp-config";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { CustomRequest } from "../../middleware/authentication.middleware";
+import { error } from "console";
 
 const prisma = new PrismaClient();
 
@@ -90,4 +91,40 @@ export const forgotpassword = async (req: CustomRequest,res: Response) => {
         console.error(error)
         return res.status(400).json({error: (error as Error).message})
     }  
+}
+
+export const forgotpassworddd = async (req: Request, res: Response) => {
+    const resetpasswordToken = req.params.resetPasswordToken
+
+    if (!resetpasswordToken) return res.status(400).json({error: "resetPasswordToken not received"})
+    
+    try {
+        const decoded = jwt.verify(resetpasswordToken,process.env.RESETPASSWORD_KEY as string)
+
+        return res.status(200).json({message: "resetPasswordToken verified successfully",email: (decoded as JwtPayload).email})
+    } catch (error) {
+        return res.status(400).json({error: (error as Error).message})
+    }
+}
+
+export const resetpassword = async (req: Request, res:Response) => {
+    const {password, confirmpassword, email} = req.body
+
+    const hashedPassword = await bcrypt.hash(password,10)
+    
+    try {
+        const user = await prisma.user.update({
+            where: {
+                email: email
+            },
+            data: {
+                password: hashedPassword
+            }
+        })
+        return res.status(200).json({message: "Password reset successfull"})
+    } catch (error) {
+        console.error(error)
+        res.status(400).json({error: (error as Error).message})
+    }
+
 }

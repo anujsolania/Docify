@@ -18,4 +18,9 @@ export interface ForgotPassResponse {
     message: string
 }
 
+export interface ResetPassResponse {
+    message: string,
+    email: string
+}
+
 // export type ForgotPasswordPayload = string

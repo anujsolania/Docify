@@ -14,7 +14,11 @@ export const signinSchema = z.object({
 })
 
 export const emailSchema = z.object({
-    email: z.string().email({message: "Invalid email"})
+    email: z.string().trim().email({message: "Invalid email"})
+})
+export const resetpasswordSchema = z.object({
+    newpassword: z.string().trim().min(6,{message: "Password must be at least 6 characters long"} ),
+    confirmnewpassword: z.string().trim().min(6,{message: "Password must be at least 6 characters long"}),
 })
 
 

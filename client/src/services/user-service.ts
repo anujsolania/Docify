@@ -1,5 +1,5 @@
 
-import { type VerifyEmailResponse, type ForgotPassResponse, type SignInResponse, type SignupResponse } from "../interfaces/interfaces";
+import { type VerifyEmailResponse, type ForgotPassResponse, type SignInResponse, type SignupResponse, type ResetPassResponse } from "../interfaces/interfaces";
 import { API } from "./api";
 
 
@@ -15,6 +15,12 @@ const AuthService = {
     },
     forgotpassword: (payload: {email: string}) => {
         return API.post<ForgotPassResponse>("/api/v1/user/forgotpassword",payload)
+    },
+    forgotpassworddd: (resetPasswordToken: string) => {
+        return API.post<ResetPassResponse>(`/api/v1/user/forgotpassword/${resetPasswordToken}`)
+    },
+    resetpassword: (payload: {password: string, confirmpassword: string, email: string}) => {
+        return API.post<ResetPassResponse>("/api/v1/user/resetpassword",payload)
     }
 }
 
