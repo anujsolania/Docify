@@ -5,6 +5,7 @@ import { useNavigate, useParams } from "react-router-dom"
 function Password() {
     const [email,setEmail] = useState("")
     const[resetPass,setresetPass] = useState(false)
+    const[mailbutton,setMailbutton] = useState(false)
 
     const [postInputs,setpostInputs] = useState({
       password: "",
@@ -21,6 +22,7 @@ function Password() {
             if (resetpasswordToken) {
                 try {
                     const response = await AuthService.forgotpassworddd(resetpasswordToken)
+                    console.log(`email is ${response.data.email}`)
                     setEmail(response.data.email)
                     alert(response.data.message)
                     setresetPass(true)
@@ -45,7 +47,7 @@ function Password() {
               <input className="border border-slate-300 rounded-lg p-1.5" type="text" placeholder="*****"
               value={postInputs.password} onChange={(e) => {setpostInputs({
                 ...postInputs,
-                confirmpassword: e.target.value
+                password: e.target.value
               })}}></input>
             </div>
             <div className="flex flex-col mt-4"  >
@@ -62,6 +64,7 @@ function Password() {
               <button className="bg-sky-600 w-[80%] p-2 mt-2 text-white rounded hover:bg-sky-700" 
               onClick={async () => {
                 try {
+                  postInputs.email = email
                   const response = await AuthService.resetpassword(postInputs)
                   alert(response.data.message)
                   navigate("/signin")
@@ -84,15 +87,19 @@ function Password() {
                 <p className="text-lg font-medium text-sky-600" >Please enter your linked email address</p>
                 <input className="w-[80%] border border-slate-300 rounded-lg p-1.5" type="text" placeholder="abc@xyz.com"
                 value={email} onChange={(e) => {setEmail(e.target.value)}}></input>
-                <button onClick={async () => {
+                {mailbutton ? (
+                  <button onClick={async () => {
                   try {
                     const response = await AuthService.forgotpassword({email})
                     alert(response.data.message)
+                    setMailbutton(true)
                   } catch (error: any) {
                     console.error(error)
                     alert(error.response.data.error)
                   }
                 }} className="bg-sky-600 w-[80%] p-2 mt-2 text-white rounded">Send Reset Link</button>
+                ) : ( <a href="https://mail.google.com" className="bg-sky-600 w-[80%] p-2 mt-2 text-white rounded text-center" >GO TO YOUR MAIL</a> ) 
+                }
             </div>
     </div>
   )

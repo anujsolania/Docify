@@ -4,6 +4,7 @@ import bcrypt, { compare } from "bcrypt";
 import { SendMail } from "../../smtp-config";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { CustomRequest } from "../../middleware/authentication.middleware";
+import { error } from "console";
 
 const prisma = new PrismaClient();
 
@@ -94,7 +95,7 @@ export const forgotpassword = async (req: CustomRequest,res: Response) => {
 }
 
 export const forgotpassworddd = async (req: Request, res: Response) => {
-    const resetpasswordToken = req.params.resetPasswordToken
+    const resetpasswordToken = req.params.resetpasswordToken
 
     if (!resetpasswordToken) return res.status(400).json({error: "resetPasswordToken not received"})
     
@@ -110,12 +111,23 @@ export const forgotpassworddd = async (req: Request, res: Response) => {
 export const resetpassword = async (req: Request, res:Response) => {
     const {password, confirmpassword, email} = req.body
 
+    console.log(req.body)
+    
+    const existingUser = await prisma.user.findUnique({
+        where: { email }, // or id, depending on what you're using
+    });
+    if (!existingUser) {
+  return res.status(404).json({ error: "User not found" });
+}
+
+    if (password != confirmpassword) return res.status(400).json({error: "You entered different passwords"})
+
     const hashedPassword = await bcrypt.hash(password,10)
     
     try {
         const user = await prisma.user.update({
             where: {
-                email: email
+                email
             },
             data: {
                 password: hashedPassword
