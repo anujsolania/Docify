@@ -79,7 +79,15 @@ function Password() {
       )
     }
 
-
+    if (mailbutton) {
+      return (
+      <div className="h-screen w-screen flex flex-col justify-center items-center gap-6" >
+        <h1 className="text-3xl font-bold" >Password reset link sent</h1>
+        <p className="text-gray-500 text-lg w-[480px] sm:w-[550px] text-center" >You can reset your password from the sent link link on your mail</p>
+        <a href="https://gmail.com" className="w-[300px] hover:bg-sky-700 bg-sky-600 rounded p-2.5 text-white text-center">Open Your Mail</a>
+      </div>
+      )
+    }
   return (
         <div className="bg-gray-300 h-screen w-screen flex justify-center items-center" >
             <div className="bg-white w-[500px] h-[250px] flex flex-col shadow-2xl rounded-lg items-center p-5 gap-4" >
@@ -87,7 +95,6 @@ function Password() {
                 <p className="text-lg font-medium text-sky-600" >Please enter your linked email address</p>
                 <input className="w-[80%] border border-slate-300 rounded-lg p-1.5" type="text" placeholder="abc@xyz.com"
                 value={email} onChange={(e) => {setEmail(e.target.value)}}></input>
-                {mailbutton ? (
                   <button onClick={async () => {
                   try {
                     const response = await AuthService.forgotpassword({email})
@@ -98,8 +105,6 @@ function Password() {
                     alert(error.response.data.error)
                   }
                 }} className="bg-sky-600 w-[80%] p-2 mt-2 text-white rounded">Send Reset Link</button>
-                ) : ( <a href="https://mail.google.com" className="bg-sky-600 w-[80%] p-2 mt-2 text-white rounded text-center" >GO TO YOUR MAIL</a> ) 
-                }
             </div>
     </div>
   )
