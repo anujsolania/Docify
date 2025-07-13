@@ -17,14 +17,17 @@ export const SignupAuthetication = async (req: Request,res: Response, next: Next
 
     try {
         const anyuser = await prisma.user.findFirst({
-        where: email
+        where: {
+            email
+        } 
     })
 
     if (anyuser) res.status(409).json({error: "User with this email already exists"})
     next()
 
     } catch (error) {
-        return res.status(500).json(error)
+        console.error(error)
+        return res.status(500).json({error: (error as Error).message})
     }
 }
 
@@ -33,7 +36,7 @@ export const SigninAuthetication = async (req: CustomRequest,res: Response, next
     
     try {
         const user = await prisma.user.findFirst({
-        where: email
+        where: { email } 
     })
     
     if (!user) return res.status(200).json({message: "User doesnot exists"})
@@ -59,7 +62,7 @@ export const forgotPasswordAuthentication = async (req: CustomRequest, res:Respo
     
     try {
         const user = await prisma.user.findFirst({
-            where: email
+            where: {email}
         })
 
     if(!user) return res.status(400).json({message: "No user with this email"})

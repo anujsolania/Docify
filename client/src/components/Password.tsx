@@ -88,9 +88,9 @@ function Password() {
                   try {
                     const response = await AuthService.forgotpassword({email})
                     alert(response.data.message)
-
-                  } catch (error) {
-                    
+                  } catch (error: any) {
+                    console.error(error)
+                    alert(error.response.data.error)
                   }
                 }} className="bg-sky-600 w-[80%] p-2 mt-2 text-white rounded">Send Reset Link</button>
             </div>

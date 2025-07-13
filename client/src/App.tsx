@@ -14,7 +14,7 @@ function App() {
       <Route path='/signup' element={<Signup/>}></Route>
       <Route path='/signin' element={<Signin/>}></Route>
       <Route path='/verifyemail' element={<Verify/>}></Route>
-      <Route path='/verifyemail/:verificationToken' element={<Signup/>}></Route>
+      <Route path='/verifyemail/:verificationToken' element={<Verify/>}></Route>
       <Route path='/forgotpassword' element={<Password/>}></Route>
       <Route path='/forgotpassword/:resetpasswordToken' element={<Password/>}></Route>
       <Route path='/resetpassword/:resetpasswordToken' element={<Password/>}></Route>

@@ -4,7 +4,6 @@ import bcrypt, { compare } from "bcrypt";
 import { SendMail } from "../../smtp-config";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { CustomRequest } from "../../middleware/authentication.middleware";
-import { error } from "console";
 
 const prisma = new PrismaClient();
 
@@ -28,7 +27,7 @@ export const signup = async (req: Request, res:Response) => {
             from: process.env.EMAIL,
             to: email,
             subject: "Welcome to Docify, verify your email",
-            text: `Hi ${user.name}, Please verify your email by clicking on the following link: ${process.env.LINK}/verified/${verificationToken}`
+            text: `Hi ${user.name}, Please verify your email by clicking on the following link: ${process.env.LINK}/verifyemail/${verificationToken}`
         })
 
         return res.status(201).json({message: "User created successfully"})
@@ -52,10 +51,10 @@ export const signin = async (req: CustomRequest, res:Response) => {
 }
 
 export const verifyemail = async (req: Request, res:Response) => {
-    const verificationToken = req.params.token
+    const verificationToken = req.params.verificationToken
 
     try {
-        const decoded = jwt.verify(verificationToken,process.env.VERIFICATION_KEY || "")
+        const decoded = jwt.verify(verificationToken,process.env.VERIFICATION_KEY as string)
 
         const user = await prisma.user.update({
             where: {
@@ -71,6 +70,7 @@ export const verifyemail = async (req: Request, res:Response) => {
         })
 
     } catch (error) {
+        console.error(error)
         return res.status(400).json({error: "Invalid verificationToken"})
     }
 }
@@ -81,7 +81,7 @@ export const forgotpassword = async (req: CustomRequest,res: Response) => {
         const resetPasswordToken = jwt.sign({email: req.body.email},process.env.RESETPASSWORD_KEY as string)
 
         await SendMail({
-        from: process.env.MAIL,
+        from: process.env.EMAIL,
         to: req.body.email,
         subject: "Reset your password",
         text: `Hii ${req.userName}, Please reset your password by clicking on the following link: ${process.env.LINK}/resetpassword/${resetPasswordToken}`
