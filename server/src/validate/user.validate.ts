@@ -25,7 +25,7 @@ export const resetpasswordSchema = z.object({
 export const userValidator = (schema: ZodTypeAny) => {
     return (req: Request, res:Response, next:NextFunction) => {
         const result = schema.safeParse(req.body) 
-        if(!result.success) {
+        if(!(result.success)) {
             return res.status(400).json({error: result.error.errors[0].message})
         }
         next()

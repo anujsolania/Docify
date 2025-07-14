@@ -1,10 +1,9 @@
 import { Request, Response } from "express";
 import { PrismaClient } from '@prisma/client';
 import bcrypt, { compare } from "bcrypt";
-import { SendMail } from "../../smtp-config";
+import { SendMail } from "../smtp-config";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { CustomRequest } from "../../middleware/authentication.middleware";
-import { error } from "console";
+import { CustomRequest } from "../interfaces/interfacess";
 
 const prisma = new PrismaClient();
 
@@ -41,7 +40,7 @@ export const signup = async (req: Request, res:Response) => {
 
 export const signin = async (req: CustomRequest, res:Response) => {
     try {
-    const token = jwt.sign({email: req.userEmail, userid: req.userId},process.env.JWT_KEY as string)
+    const token = jwt.sign({email: req.userEmail, userId: req.userId},process.env.JWT_KEY as string)
 
     return res.status(200).json({message: `Logged In successfully as ${req.userEmail}`,token})
 

@@ -3,13 +3,9 @@ import { NextFunction, Request, Response } from "express"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import { SendMail } from "../smtp-config";
-import { resetpassword } from "../actions/user/user.actions";
+import { resetpassword } from "../actions/user.actions";
+import { CustomRequest } from "../interfaces/interfacess";
 
-export interface CustomRequest extends Request {
-  userId?: Number;
-  userEmail?: string
-  userName?: string
-}
 
 const prisma = new PrismaClient()
 

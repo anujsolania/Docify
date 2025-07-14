@@ -1,6 +1,6 @@
 import express from "express";
 import { emailSchema,resetpasswordSchema, signinSchema, signupSchema, userValidator } from "../validate/user.validate";
-import { forgotpassword, forgotpassworddd, resetpassword, signin, signup, verifyemail } from "../actions/user/user.actions";
+import { forgotpassword, forgotpassworddd, resetpassword, signin, signup, verifyemail } from "../actions/user.actions";
 import { forgotPasswordAuthentication as forgotPassAuth, SigninAuthetication as SigninAuth, SignupAuthetication as SignupAuth } from "../middleware/authentication.middleware";
 const userRouter = express.Router()
 
