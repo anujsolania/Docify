@@ -39,7 +39,7 @@ export const getdocuments = async (req:CustomRequest, res:Response) => {
     }
 }
 
-export const searchdocuments = async (req: Request, res: Response) => {
+export const searchdocuments = async (req: CustomRequest, res: Response) => {
     const {filter} = req.query
 
     if(!filter) return res.status(400).json({error: "search data not received"})
@@ -47,6 +47,7 @@ export const searchdocuments = async (req: Request, res: Response) => {
     try {
         const documents = await prisma.document.findMany({
             where: {
+                userId: req.userId,
                 title: {
                     contains: filter as string,
                     mode: "insensitive"
