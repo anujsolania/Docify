@@ -15,7 +15,7 @@ export const signup = async (req: Request, res:Response) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        const verificationToken = jwt.sign({email}, process.env.VERIFICATION_KEY || "")
+        const verificationToken = jwt.sign({email}, process.env.VERIFICATION_KEY as string,{ expiresIn: "1h" })
 
         const user = await prisma.user.create({
             data: {
@@ -57,6 +57,14 @@ export const verifyemail = async (req: Request, res:Response) => {
     try {
         const decoded = jwt.verify(verificationToken,process.env.VERIFICATION_KEY as string)
 
+        const userr = await prisma.user.findFirst({
+            where: {
+                email: (decoded as JwtPayload).email
+            }
+        })
+
+        if (userr?.isVerified) return res.status(200).json({message: "User is already verified"})
+
         const user = await prisma.user.update({
             where: {
                 email: (decoded as JwtPayload).email
@@ -79,7 +87,7 @@ export const verifyemail = async (req: Request, res:Response) => {
 export const forgotpassword = async (req: CustomRequest,res: Response) => {
     
     try {
-        const resetPasswordToken = jwt.sign({email: req.body.email},process.env.RESETPASSWORD_KEY as string)
+        const resetPasswordToken = jwt.sign({email: req.body.email},process.env.RESETPASSWORD_KEY as string,{ expiresIn: "1h" })
 
         await SendMail({
         from: process.env.EMAIL,
