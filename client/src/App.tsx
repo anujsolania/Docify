@@ -1,9 +1,10 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
-import Signin from './components/Signin'
-import Signup from './components/Signup'
-import Verify from './components/Verify'
-import Password from './components/Password'
+import Signin from './pages/Signin'
+import Signup from './pages/Signup'
+import Verify from './pages/Verify'
+import Password from './pages/Password'
+import Home from './pages/Home'
 
 function App() {
 
@@ -18,6 +19,8 @@ function App() {
       <Route path='/forgotpassword' element={<Password/>}></Route>
       <Route path='/forgotpassword/:resetpasswordToken' element={<Password/>}></Route>
       <Route path='/resetpassword/:resetpasswordToken' element={<Password/>}></Route>
+
+      <Route path='/' element={<Home/>} ></Route>
     </Routes>
     </BrowserRouter>
     </>
