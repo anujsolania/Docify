@@ -1,9 +1,6 @@
 import { PrismaClient } from "@prisma/client"
 import { NextFunction, Request, Response } from "express"
 import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
-import { SendMail } from "../smtp-config";
-import { resetpassword } from "../actions/user.actions";
 import { CustomRequest } from "../interfaces/interfacess";
 
 

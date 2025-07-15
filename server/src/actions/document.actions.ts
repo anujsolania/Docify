@@ -25,7 +25,7 @@ export const createdocument = async (req:CustomRequest, res:Response) => {
     }
 }
 
-export const getdocuments = async (req:CustomRequest, res:Response) => {
+export const alldocuments = async (req:CustomRequest, res:Response) => {
     try { 
         const documents = await prisma.document.findMany({
             where : {
@@ -58,5 +58,30 @@ export const searchdocuments = async (req: CustomRequest, res: Response) => {
     } catch (error) {
         console.error(error)
         return res.status(400).json({error: (error as Error).message})
+    }
+}
+
+export const deletedocument = async (req: CustomRequest, res:Response) => {
+    const {documentId} = req.params
+
+    if (!documentId) return res.status(400).json({error: "DocumentId not received"})
+
+    try {
+        const document = await prisma.document.findFirst({
+            where: {
+                userId: req.userId
+            }
+        })
+        if (document?.userId != req.userId) return res.status(400).json({error: "You aren't authorized to delete"})
+
+        await prisma.document.delete({
+            where: {
+                id: Number(documentId)
+            }
+        })
+        return res.status(200).json({message: "Document deleted"})
+    } catch (error: unknown) {
+        if (error instanceof Error) return res.status(400).json({error:( error as Error).message})
+        return res.status(400).json({ error: String(error) })
     }
 }
