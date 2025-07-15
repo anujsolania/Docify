@@ -21,6 +21,9 @@ const AuthService = {
     },
     resetpassword: (payload: {password: string, confirmpassword: string, email: string}) => {
         return API.post<ResetPassResponse>("/api/v1/user/resetpassword",payload)
+    },
+    getuser: ({}) => {
+        return API.get()
     }
 }
 

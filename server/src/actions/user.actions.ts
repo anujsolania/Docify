@@ -147,3 +147,18 @@ export const resetpassword = async (req: Request, res:Response) => {
     }
 
 }
+
+export const getuser = async (req: CustomRequest, res: Response) => {
+    try {
+        const user = await prisma.user.findFirst({
+            where: {
+                id: req.userId
+            }
+        })
+        return res.status(200).json({username: user?.name})
+    } catch (error: unknown) {
+        console.error(error)
+        return res.status(400).json({ error: "Unable to getuser details" })
+    }
+
+}
