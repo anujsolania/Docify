@@ -10,7 +10,7 @@ export interface SignInResponse {
 }
 
 export interface VerifyEmailResponse {
-    verified: boolean,
+    verified: boolean
     message: string
 }
 
@@ -19,8 +19,27 @@ export interface ForgotPassResponse {
 }
 
 export interface ResetPassResponse {
-    message: string,
+    message: string
     email: string
+}
+export interface GetUserResponse {
+    username: string
+}
+
+export interface Document {
+    id: number
+    title?: string
+    content?: string
+    updatedAt: Date
+    userId: number
+}
+export interface GetDocumentsResponse {
+    documents: Document[]
+}
+
+export interface CreateDocumentResponse {
+    message: string
+    document: Document
 }
 
 // export type ForgotPasswordPayload = string

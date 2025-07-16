@@ -1,17 +1,9 @@
-import { useEffect } from "react"
+
 import Body from "../components/Body"
 import Navbar from "../components/Navbar"
-import AuthService from "../services/user-service"
 
 
 const Home = () => {
-  const token = sessionStorage.getItem("token")
-
-  useEffect(() => {
-   const getrequest = async () => {
-      const response = await AuthService.
-    }
-  },[])
 
 
   return (

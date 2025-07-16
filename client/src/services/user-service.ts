@@ -1,5 +1,5 @@
 
-import { type VerifyEmailResponse, type ForgotPassResponse, type SignInResponse, type SignupResponse, type ResetPassResponse } from "../interfaces/interfaces";
+import type { VerifyEmailResponse, ForgotPassResponse, SignInResponse, SignupResponse, ResetPassResponse, GetUserResponse, GetDocumentsResponse, CreateDocumentResponse } from "../interfaces/interfaces";
 import { API } from "./api";
 
 
@@ -22,8 +22,14 @@ const AuthService = {
     resetpassword: (payload: {password: string, confirmpassword: string, email: string}) => {
         return API.post<ResetPassResponse>("/api/v1/user/resetpassword",payload)
     },
-    getuser: ({}) => {
-        return API.get()
+    getuser: (token: string) => {
+        return API.get<GetUserResponse>("/api/v1/user/",{ headers: {authorization: token} })
+    },
+    getdocuments: (token: string) => {
+        return API.get<GetDocumentsResponse>("/api/v1/document",{headers: {authorization: token}})
+    },
+    createdocument: (token: string) => {
+        return API.post<CreateDocumentResponse>("/api/v1/document",{headers: {authorization: token}})
     }
 }
 

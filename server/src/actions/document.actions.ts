@@ -6,15 +6,12 @@ import { error } from "console";
 const prisma = new PrismaClient()
 
 export const createdocument = async (req:CustomRequest, res:Response) => {
-    const{title,content} = req.body
 
     if (!req.userId) return res.status(400)
 
     try {
         const document = await prisma.document.create({
             data: {
-                title,
-                content,
                 userId: req.userId
             }
         })

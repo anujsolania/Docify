@@ -156,7 +156,7 @@ export const getuser = async (req: CustomRequest, res: Response) => {
             }
         })
         return res.status(200).json({username: user?.name})
-    } catch (error: unknown) {
+    } catch (error) {
         console.error(error)
         return res.status(400).json({ error: "Unable to getuser details" })
     }
