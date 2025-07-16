@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 
 export const createdocument = async (req:CustomRequest, res:Response) => {
 
-    if (!req.userId) return res.status(400)
+    if (!req.userId) return res.status(400).json({ error: "User not authenticated" });
 
     try {
         const document = await prisma.document.create({

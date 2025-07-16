@@ -26,10 +26,10 @@ const AuthService = {
         return API.get<GetUserResponse>("/api/v1/user/",{ headers: {authorization: token} })
     },
     getdocuments: (token: string) => {
-        return API.get<GetDocumentsResponse>("/api/v1/document",{headers: {authorization: token}})
+        return API.get<GetDocumentsResponse>("/api/v1/document/",{headers: {authorization: token}})
     },
     createdocument: (token: string) => {
-        return API.post<CreateDocumentResponse>("/api/v1/document",{headers: {authorization: token}})
+        return API.post<CreateDocumentResponse>("/api/v1/document/",{},{headers: {authorization: token}})
     }
 }
 

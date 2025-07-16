@@ -40,7 +40,8 @@ export const signup = async (req: Request, res:Response) => {
 
 export const signin = async (req: CustomRequest, res:Response) => {
     try {
-    const token = jwt.sign({email: req.userEmail, userId: req.userId},process.env.JWT_KEY as string)
+    console.log(`signin : ${req.userId}`)
+    const token = jwt.sign({email: req.userEmail, id: req.userId},process.env.JWT_KEY as string)
 
     return res.status(200).json({message: `Logged In successfully as ${req.userEmail}`,token})
 

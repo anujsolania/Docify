@@ -5,8 +5,8 @@ import { forgotPasswordAuthentication as forgotPassAuth, SigninAuthetication as 
 import { Authorization } from "../middleware/authorization.middleware";
 const userRouter = express.Router()
 
-userRouter.post("/signup",userValidator(signupSchema),SignupAuth, signup)
-userRouter.post("/signin",userValidator(signinSchema),SigninAuth, signin)
+userRouter.post("/signup",userValidator(signupSchema),SignupAuth,signup)
+userRouter.post("/signin",userValidator(signinSchema),SigninAuth,signin)
 userRouter.put("/verifyemail/:verificationToken",verifyemail)
 userRouter.post("/forgotpassword",userValidator(emailSchema),forgotPassAuth,forgotpassword)
 userRouter.post("/forgotpassword/:resetpasswordToken",forgotpassworddd)

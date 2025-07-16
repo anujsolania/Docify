@@ -42,6 +42,7 @@ export const SigninAuthetication = async (req: CustomRequest,res: Response, next
     if (!comparePassword) return res.status(200).json({message: "Incorrect password"})
         
     req.userId = user.id
+    console.log(`sigin auth ${req.userId}`)
     req.userEmail = user.email
     next()
     } 

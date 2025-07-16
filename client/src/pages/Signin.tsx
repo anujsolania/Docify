@@ -1,9 +1,11 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import AuthService from "../services/user-service"
 
 function Signin() {
-     const [postInputs,setpostInputs] = useState({
+    const navigate = useNavigate()
+
+    const [postInputs,setpostInputs] = useState({
         email: "",
         password: ""
     })
@@ -41,7 +43,7 @@ function Signin() {
                         const token = response.data.token
                         sessionStorage.setItem("token",token)
                         alert(response.data.message)
-                        // navigate("/home") 
+                        navigate("/") 
                         } catch (error: any) {
                             alert(error.response.data.error)
                         }

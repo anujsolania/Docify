@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import AuthService from "../services/user-service"
 import type { Document } from "../interfaces/interfaces"
 import { useNavigate } from "react-router-dom"
+import Documents from "./Documents"
 
 const Body = () => {
   const[documents,setDocuments] = useState<Document[]>([])
@@ -18,12 +19,16 @@ const Body = () => {
         alert(error.response.data.error)
       }
     })()
-  })
+  },[])
 
   const createdocument = async () => {
     try {
-      const response = await AuthService.createdocument(sessionStorage.getItem("token") as string)
-      navigate(`/document${response.data.document.id}`)
+      const token = sessionStorage.getItem("token");
+      if (!token) return alert("User is not authenticated");
+      const response = await AuthService.createdocument(token)
+      alert("button clicked")
+      alert(response.data.message)
+      // navigate(`/document/${response.data.document.id}`)
     } catch (error: any) {
       console.error(error)
       alert(error.response.data.error)
@@ -43,6 +48,15 @@ const Body = () => {
         <div className="" >
           <p className="text-lg font-semibold" >Recent Documents</p>
         </div>
+        <Documents documents={documents} ></Documents>
+        {/* <div className="flex flex-wrap gap-8" >
+        {documents.map((doc) => (
+            <div key={doc.id} className="h-[250px] w-[150px]  bg-white">
+
+            </div>))}
+        </div> */}
+{/* 
+
         <div className="flex flex-wrap gap-8" >
           <div className="h-[250px] w-[150px]  bg-white" >
             div1
@@ -65,7 +79,7 @@ const Body = () => {
           <div className="h-[250px] w-[150px] bg-white">
             div3
           </div>
-        </div>
+        </div> */}
       </div>
   )
 }
