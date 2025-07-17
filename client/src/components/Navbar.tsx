@@ -25,7 +25,7 @@ const Navbar = () => {
         </div>
         <div className="flex justify-end gap-10">
             <input className="bg-gray-300 rounded-lg p-5 h-8 w-52" placeholder="Search documents..." ></input>
-            <button className="bg-blue-400 h-10 w-10 rounded-full text-white text-2xl" >{name[0]}</button>
+            <button className="bg-blue-400 h-10 w-10 rounded-full text-white text-2xl m-auto" >{name[0]}</button>
         </div>
     </div>
   )
