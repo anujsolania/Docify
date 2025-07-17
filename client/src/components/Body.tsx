@@ -9,8 +9,8 @@ const Body = () => {
 
   const navigate = useNavigate()
 
-  useEffect(() => {
-    (async () => {
+
+    const getdocs = async () => {
       try {
         const response = await AuthService.getdocuments(sessionStorage.getItem("token") as string)
         setDocuments(response.data.documents)
@@ -18,7 +18,10 @@ const Body = () => {
         console.error(error)
         alert(error.response.data.error)
       }
-    })()
+    }
+
+  useEffect(() => {
+    getdocs()
   },[])
 
   const createdocument = async () => {
@@ -26,7 +29,6 @@ const Body = () => {
       const token = sessionStorage.getItem("token");
       if (!token) return alert("User is not authenticated");
       const response = await AuthService.createdocument(token)
-      alert("button clicked")
       alert(response.data.message)
       // navigate(`/document/${response.data.document.id}`)
     } catch (error: any) {
@@ -37,7 +39,7 @@ const Body = () => {
 
 
   return (
-          <div className="flex flex-col gap-6 px-10 md:px-20 lg:px-32 xl:px-40 py-10" >
+        <div className="flex flex-col gap-6 px-10 md:px-20 lg:px-32 xl:px-40 py-10" >
         <div className="h-[200px] w-full" >
           <button className="h-full w-[150px] bg-white shadow-2xl text-sm flex flex-col justify-center items-center"
           onClick={createdocument} >
@@ -49,37 +51,6 @@ const Body = () => {
           <p className="text-lg font-semibold" >Recent Documents</p>
         </div>
         <Documents documents={documents} ></Documents>
-        {/* <div className="flex flex-wrap gap-8" >
-        {documents.map((doc) => (
-            <div key={doc.id} className="h-[250px] w-[150px]  bg-white">
-
-            </div>))}
-        </div> */}
-{/* 
-
-        <div className="flex flex-wrap gap-8" >
-          <div className="h-[250px] w-[150px]  bg-white" >
-            div1
-          </div>
-          <div className="h-[250px] w-[150px]  bg-white">
-            div2
-          </div>
-          <div className="h-[250px] w-[150px]  bg-white">
-            div3
-          </div>
-          <div className="h-[250px] w-[150px] bg-white">
-            div3
-          </div>
-          <div className="h-[250px] w-[150px] bg-white">
-            div3
-          </div>
-          <div className="h-[250px] w-[150px] bg-white">
-            div3
-          </div>
-          <div className="h-[250px] w-[150px] bg-white">
-            div3
-          </div>
-        </div> */}
       </div>
   )
 }
