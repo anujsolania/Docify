@@ -23,8 +23,9 @@ const Navbar = () => {
     const rect = e.currentTarget.getBoundingClientRect()
     setPosition({
       top: rect.bottom +  window.scrollY,
-      left: rect.left + window.scrollX
+      left: rect.left + window.scrollX + (-50)
     })
+    setisOpen(!isOpen)
   }
 
   return (
@@ -41,7 +42,7 @@ const Navbar = () => {
         {
           isOpen && (
                 <div className="absolute  bg-white border border-gray-300 rounded" style={{top: position.top, left: position.left}}>
-                    <p className="border-b border-b-gray-300 hover:bg-gray-200 p-1.5" >Logout</p>
+                    <p className="hover:bg-gray-100 p-1.5" >Logout</p>
                 </div>
           )
         }

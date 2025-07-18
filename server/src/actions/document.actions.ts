@@ -66,7 +66,7 @@ export const deletedocument = async (req: CustomRequest, res:Response) => {
     try {
         const document = await prisma.document.findFirst({
             where: {
-                userId: Number(documentId)
+                id: Number(documentId)
             }
         })
         if (document?.userId != req.userId) return res.status(400).json({error: "You aren't authorized to delete"})

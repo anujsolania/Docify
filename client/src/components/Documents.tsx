@@ -1,11 +1,16 @@
 // import { useNavigate } from "react-router-dom"
 import type { Document } from "../interfaces/interfaces"
 import image from "../assets/logo.png"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import AuthService from "../services/user-service"
 
 const Documents = ({documents}: {documents: Document[]}) => {
     const [position,setPosition] = useState({top:0, left:0})
     const [isOpen,setisOpen] = useState(false)
+    const[sendData,setsendData] = useState({
+        documentId: 0,
+        token: ""
+    })
     // const navigate = useNavigate()
 
     const handlePosition = (e: React.MouseEvent, docId: number) => {
@@ -16,7 +21,28 @@ const Documents = ({documents}: {documents: Document[]}) => {
                 left: rect.left + window.scrollX
             })
             setisOpen(!isOpen)
+            setsendData({
+                ...sendData,
+                documentId: docId
+            })
     }
+
+    const deletedocument = async () => {
+    try {
+      const token = sessionStorage.getItem("token");
+      if (!token) return alert("Token is missingggg");
+      setsendData({
+        ...sendData,
+        token: token
+      })
+      const response = await AuthService.deletedocument(sendData)
+      alert(response.data.message)
+      // navigate(`/document/${response.data.document.id}`)
+    } catch (error: any) {
+      console.error(error)
+      alert(error.response.data.error)
+    }
+  }
 
   return (
     <div className="flex flex-wrap gap-8"  >
@@ -43,8 +69,9 @@ const Documents = ({documents}: {documents: Document[]}) => {
         {
             isOpen && (
                 <div className="absolute  bg-white border border-gray-300 rounded" style={{top: position.top, left: position.left}}>
-                    <p className="border-b border-b-gray-300 hover:bg-gray-200 p-1.5" >Delete</p>
-                    <p className="hover:bg-gray-200 p-1.5">Share</p>
+                    <p className="border-b border-b-gray-300 hover:bg-gray-100 p-1.5" 
+                    onClick={deletedocument}>Delete</p>
+                    <p className="hover:bg-gray-100 p-1.5">Share</p>
                 </div>
             )
         }

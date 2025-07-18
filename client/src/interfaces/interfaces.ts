@@ -41,5 +41,8 @@ export interface CreateDocumentResponse {
     message: string
     document: Document
 }
+export interface DeleteDocumentResponse {
+    message: string
+}
 
 // export type ForgotPasswordPayload = string
