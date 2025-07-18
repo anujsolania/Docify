@@ -22,8 +22,8 @@ const Documents = ({documents}: {documents: Document[]}) => {
             })
             setisOpen(!isOpen)
             setsendData({
-                ...sendData,
-                documentId: docId
+                documentId: docId,
+                token: sessionStorage.getItem("token") as string
             })
     }
 
@@ -31,10 +31,6 @@ const Documents = ({documents}: {documents: Document[]}) => {
     try {
       const token = sessionStorage.getItem("token");
       if (!token) return alert("Token is missingggg");
-      setsendData({
-        ...sendData,
-        token: token
-      })
       const response = await AuthService.deletedocument(sendData)
       alert(response.data.message)
       // navigate(`/document/${response.data.document.id}`)
