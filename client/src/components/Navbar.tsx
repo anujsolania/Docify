@@ -4,6 +4,8 @@ import AuthService from "../services/user-service"
 
 const Navbar = () => {
   const[name,setName] = useState("")
+  const[position,setPosition] = useState({top:0, left:0})
+  const[isOpen,setisOpen] = useState(false)
   
   useEffect(() => {
    (async () => {
@@ -17,6 +19,14 @@ const Navbar = () => {
     })()
   },[])
 
+  const handlePosition = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    setPosition({
+      top: rect.bottom +  window.scrollY,
+      left: rect.left + window.scrollX
+    })
+  }
+
   return (
     <div className="w-screen h-[50px] bg-white flex items-center justify-between p-10">
         <div className="flex gap-4" >
@@ -25,8 +35,16 @@ const Navbar = () => {
         </div>
         <div className="flex justify-end gap-10">
             <input className="bg-gray-300 rounded-lg p-5 h-8 w-52" placeholder="Search documents..." ></input>
-            <button className="bg-blue-400 h-10 w-10 rounded-full text-white text-2xl m-auto" >{name[0]}</button>
+            <button className="bg-blue-400 h-10 w-10 rounded-full text-white text-2xl m-auto" 
+            onClick={(e) => {handlePosition(e)}}>{name[0]}</button>
         </div>
+        {
+          isOpen && (
+                <div className="absolute  bg-white border border-gray-300 rounded" style={{top: position.top, left: position.left}}>
+                    <p className="border-b border-b-gray-300 hover:bg-gray-200 p-1.5" >Logout</p>
+                </div>
+          )
+        }
     </div>
   )
 }
