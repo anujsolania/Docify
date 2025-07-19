@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react"
 import AuthService from "../services/user-service"
 import type { Document } from "../interfaces/interfaces"
-import { useNavigate } from "react-router-dom"
 import Documents from "./Documents"
 
 const Body = () => {
   const[documents,setDocuments] = useState<Document[]>([])
-
-  const navigate = useNavigate()
 
 
     const getdocs = async () => {
@@ -30,6 +27,7 @@ const Body = () => {
       if (!token) return alert("User is not authenticated");
       const response = await AuthService.createdocument(token)
       alert(response.data.message)
+      getdocs()
       // navigate(`/document/${response.data.document.id}`)
     } catch (error: any) {
       console.error(error)
@@ -50,7 +48,7 @@ const Body = () => {
         <div className="" >
           <p className="text-lg font-semibold" >Recent Documents</p>
         </div>
-        <Documents documents={documents} ></Documents>
+        <Documents documents={documents} getdocs={getdocs} ></Documents>
       </div>
   )
 }

@@ -1,11 +1,14 @@
 import { useEffect, useState } from "react"
 import image from "../assets/logo.png"
 import AuthService from "../services/user-service"
+import { useNavigate } from "react-router-dom"
 
 const Navbar = () => {
   const[name,setName] = useState("")
   const[position,setPosition] = useState({top:0, left:0})
   const[isOpen,setisOpen] = useState(false)
+
+  const navigate = useNavigate()
   
   useEffect(() => {
    (async () => {
@@ -28,6 +31,12 @@ const Navbar = () => {
     setisOpen(!isOpen)
   }
 
+  const logout = () => {
+    sessionStorage.clear()
+    navigate("/signin")
+
+  }
+
   return (
     <div className="w-screen h-[50px] bg-white flex items-center justify-between p-10">
         <div className="flex gap-4" >
@@ -42,7 +51,7 @@ const Navbar = () => {
         {
           isOpen && (
                 <div className="absolute  bg-white border border-gray-300 rounded" style={{top: position.top, left: position.left}}>
-                    <p className="hover:bg-gray-100 p-1.5" >Logout</p>
+                    <p className="hover:bg-gray-100 p-1.5" onClick={logout} >Logout</p>
                 </div>
           )
         }

@@ -1,10 +1,10 @@
 // import { useNavigate } from "react-router-dom"
 import type { Document } from "../interfaces/interfaces"
 import image from "../assets/logo.png"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import AuthService from "../services/user-service"
 
-const Documents = ({documents}: {documents: Document[]}) => {
+const Documents = ({documents,getdocs}: {documents: Document[],getdocs: () => {}}) => {
     const [position,setPosition] = useState({top:0, left:0})
     const [isOpen,setisOpen] = useState(false)
     const[sendData,setsendData] = useState({
@@ -14,7 +14,6 @@ const Documents = ({documents}: {documents: Document[]}) => {
     // const navigate = useNavigate()
 
     const handlePosition = (e: React.MouseEvent, docId: number) => {
-        console.log("button clicked")
         const rect = e.currentTarget.getBoundingClientRect()
             setPosition({
                 top: rect.bottom + window.scrollY,
@@ -29,10 +28,12 @@ const Documents = ({documents}: {documents: Document[]}) => {
 
     const deletedocument = async () => {
     try {
+      setisOpen(!isOpen)
       const token = sessionStorage.getItem("token");
       if (!token) return alert("Token is missingggg");
       const response = await AuthService.deletedocument(sendData)
       alert(response.data.message)
+      getdocs()
       // navigate(`/document/${response.data.document.id}`)
     } catch (error: any) {
       console.error(error)

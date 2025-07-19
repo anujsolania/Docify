@@ -6,7 +6,6 @@ import { CustomRequest } from "../interfaces/interfacess";
 export const Authorization = (req:CustomRequest, res:Response, next:NextFunction) => {
     const accessToken = req.headers.authorization
 
-    console.log(`authorization: ${accessToken}`)
     if (!accessToken) {
         return res.status(401).json({ error: "Access token missing" })
     }

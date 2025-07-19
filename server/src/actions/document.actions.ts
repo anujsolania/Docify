@@ -69,6 +69,12 @@ export const deletedocument = async (req: CustomRequest, res:Response) => {
                 id: Number(documentId)
             }
         })
+        console.log("token", req.headers.authorization)
+        console.log("documentId", documentId)
+        console.log("req userid", req.userId)
+
+        if (!document) return res.status(404).json({ error: "Document not found" })
+            
         if (document?.userId != req.userId) return res.status(400).json({error: "You aren't authorized to delete"})
 
         await prisma.document.delete({
