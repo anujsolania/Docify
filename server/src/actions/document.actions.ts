@@ -23,26 +23,18 @@ export const createdocument = async (req:CustomRequest, res:Response) => {
 }
 
 export const alldocuments = async (req:CustomRequest, res:Response) => {
+     const {filter} = req.query
+
     try { 
+        if (!filter) {
         const documents = await prisma.document.findMany({
             where : {
                 userId: req.userId
-            }
-        })
-        return res.status(200).json({documents})
-    } catch (error) {
-        console.error(error)
-        return res.status(400).json({error: (error as Error).message})
-    }
-}
-
-export const searchdocuments = async (req: CustomRequest, res: Response) => {
-    const {filter} = req.query
-
-    if(!filter) return res.status(400).json({error: "search data not received"})
-    
-    try {
-        const documents = await prisma.document.findMany({
+            }})
+        return res.status(200).json({documents}) 
+        }
+        console.log("filter = ",filter)
+        const filtereddocuments = await prisma.document.findMany({
             where: {
                 userId: req.userId,
                 title: {
@@ -51,12 +43,13 @@ export const searchdocuments = async (req: CustomRequest, res: Response) => {
                 }
             }
         })
-        return res.status(200).json({documents})
+        return res.status(200).json({filtereddocuments})
     } catch (error) {
         console.error(error)
         return res.status(400).json({error: (error as Error).message})
     }
 }
+
 
 export const deletedocument = async (req: CustomRequest, res:Response) => {
     const {documentId} = req.params
@@ -74,7 +67,7 @@ export const deletedocument = async (req: CustomRequest, res:Response) => {
         console.log("req userid", req.userId)
 
         if (!document) return res.status(404).json({ error: "Document not found" })
-            
+
         if (document?.userId != req.userId) return res.status(400).json({error: "You aren't authorized to delete"})
 
         await prisma.document.delete({

@@ -1,5 +1,5 @@
 
-import { type VerifyEmailResponse, type ForgotPassResponse, type SignInResponse, type SignupResponse, type ResetPassResponse, type GetUserResponse, type GetDocumentsResponse, type CreateDocumentResponse, type DeleteDocumentResponse } from "../interfaces/interfaces";
+import { type VerifyEmailResponse, type ForgotPassResponse, type SignInResponse, type SignupResponse, type ResetPassResponse, type GetUserResponse, type GetDocumentsResponse, type CreateDocumentResponse, type DeleteDocumentResponse, type GetFilterDocsResponse } from "../interfaces/interfaces";
 import { API } from "./api";
 
 
@@ -33,6 +33,9 @@ const AuthService = {
     },
     deletedocument: (payload: {documentId: number,token: string}) => {
         return API.delete<DeleteDocumentResponse>(`/api/v1/document/delete/${payload.documentId}`,{headers: {authorization: payload.token}})
+    },
+    filterdocuments: (payload: {filter:string, token: string}) => {
+        return API.get<GetFilterDocsResponse>(`/api/v1/document/?filter=${payload.filter}`,{headers: {authorization: payload.token}})
     }
 }
 

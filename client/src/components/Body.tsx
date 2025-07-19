@@ -2,23 +2,17 @@ import { useEffect, useState } from "react"
 import AuthService from "../services/user-service"
 import type { Document } from "../interfaces/interfaces"
 import Documents from "./Documents"
+import { useStore } from "../store/zustand"
 
 const Body = () => {
-  const[documents,setDocuments] = useState<Document[]>([])
 
-
-    const getdocs = async () => {
-      try {
-        const response = await AuthService.getdocuments(sessionStorage.getItem("token") as string)
-        setDocuments(response.data.documents)
-      } catch (error: any) {
-        console.error(error)
-        alert(error.response.data.error)
-      }
-    }
+  //@ts-ignore
+  const getDocuments = useStore((state) => state.getDocuments)
+   //@ts-ignore
+  const documents = useStore((state) => state.documents)
 
   useEffect(() => {
-    getdocs()
+    getDocuments()
   },[])
 
   const createdocument = async () => {
@@ -27,7 +21,7 @@ const Body = () => {
       if (!token) return alert("User is not authenticated");
       const response = await AuthService.createdocument(token)
       alert(response.data.message)
-      getdocs()
+      getDocuments()
       // navigate(`/document/${response.data.document.id}`)
     } catch (error: any) {
       console.error(error)
@@ -48,7 +42,7 @@ const Body = () => {
         <div className="" >
           <p className="text-lg font-semibold" >Recent Documents</p>
         </div>
-        <Documents documents={documents} getdocs={getdocs} ></Documents>
+        <Documents ></Documents>
       </div>
   )
 }

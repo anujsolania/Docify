@@ -45,4 +45,8 @@ export interface DeleteDocumentResponse {
     message: string
 }
 
+export interface GetFilterDocsResponse {
+    filtereddocuments: Document[]
+}
+
 // export type ForgotPasswordPayload = string

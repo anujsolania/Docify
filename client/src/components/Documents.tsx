@@ -1,10 +1,11 @@
 // import { useNavigate } from "react-router-dom"
 import type { Document } from "../interfaces/interfaces"
 import image from "../assets/logo.png"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import AuthService from "../services/user-service"
+import { useStore } from "../store/zustand"
 
-const Documents = ({documents,getdocs}: {documents: Document[],getdocs: () => {}}) => {
+const Documents = () => {
     const [position,setPosition] = useState({top:0, left:0})
     const [isOpen,setisOpen] = useState(false)
     const[sendData,setsendData] = useState({
@@ -12,6 +13,16 @@ const Documents = ({documents,getdocs}: {documents: Document[],getdocs: () => {}
         token: ""
     })
     // const navigate = useNavigate()
+
+    useEffect(() => {
+        getDocuments()
+    },[])
+
+  
+    const getDocuments = useStore((state) => state.getDocuments)
+       //@ts-ignore
+    const documents = useStore((state) => state.documents)
+
 
     const handlePosition = (e: React.MouseEvent, docId: number) => {
         const rect = e.currentTarget.getBoundingClientRect()
@@ -33,7 +44,7 @@ const Documents = ({documents,getdocs}: {documents: Document[],getdocs: () => {}
       if (!token) return alert("Token is missingggg");
       const response = await AuthService.deletedocument(sendData)
       alert(response.data.message)
-      getdocs()
+      getDocuments()
       // navigate(`/document/${response.data.document.id}`)
     } catch (error: any) {
       console.error(error)
@@ -44,13 +55,14 @@ const Documents = ({documents,getdocs}: {documents: Document[],getdocs: () => {}
   return (
     <div className="flex flex-wrap gap-8"  >
         {
+            //@ts-ignore
             documents.map((doc) => (
                 <div key={doc.id} className="h-[250px] w-[180px] bg-white flex flex-col border border-gray-400 hover:shadow-xl rounded">
                     <div className="h-[200px] border-b border-b-gray-400 p-2 " >
                     <p>Content</p>
                     </div>
-                    <div className="flex flex-col gap-1 p-3" >
-                        <div className="text-sm " >Untitled Document</div>
+                    <div className="flex flex-col gap-3 p-3" >
+                        <div className="text-sm h-[10px]" >{doc.title}</div>
                         <div className="flex gap-3" >
                         <img src={image} className="h-6 m-auto" ></img>
                         <p className="text-sm text-gray-600 font-extralight m-auto" >05 June 2026</p>

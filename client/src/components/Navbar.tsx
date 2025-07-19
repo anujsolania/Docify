@@ -1,19 +1,26 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import image from "../assets/logo.png"
 import AuthService from "../services/user-service"
 import { useNavigate } from "react-router-dom"
+import { useStore } from "../store/zustand"
 
 const Navbar = () => {
   const[name,setName] = useState("")
   const[position,setPosition] = useState({top:0, left:0})
   const[isOpen,setisOpen] = useState(false)
+  const debounce = useRef(null)
+
+  const setDocuments = useStore((state) => state.setDocuments)
 
   const navigate = useNavigate()
+
+  const token = sessionStorage.getItem("token") as string
   
   useEffect(() => {
    (async () => {
     try {
-      const response = await AuthService.getuser(sessionStorage.getItem("token") as string)
+      if (!token) return alert("Token is missingggg");
+      const response = await AuthService.getuser(token)
       setName(response.data.username)
     } catch (error: any) {
       console.error(error)
@@ -21,6 +28,22 @@ const Navbar = () => {
     }
     })()
   },[])
+
+  const filterDocuments = async (filter: string) => {
+    if (debounce.current) clearTimeout(debounce.current)
+    if (filter) {
+      try {
+        //@ts-ignore
+        debounce.current = setTimeout(async () => {
+          const response = await AuthService.filterdocuments({filter,token})
+          setDocuments(response.data.filtereddocuments)
+        }, 300);
+      } catch (error: any) {
+        console.error(error)
+        alert(error.response.data.error)
+      }
+    }
+  }
 
   const handlePosition = (e: React.MouseEvent) => {
     const rect = e.currentTarget.getBoundingClientRect()
@@ -44,7 +67,8 @@ const Navbar = () => {
             <h1 className="text-2xl font-semibold m-auto" >Docify </h1>
         </div>
         <div className="flex justify-end gap-10">
-            <input className="bg-gray-300 rounded-lg p-5 h-8 w-52" placeholder="Search documents..." ></input>
+            <input className="bg-gray-300 rounded-lg p-5 h-8 w-52" placeholder="Search documents..." 
+            onChange={(e) => filterDocuments(e.target.value)}></input>
             <button className="bg-blue-400 h-10 w-10 rounded-full text-white text-2xl m-auto" 
             onClick={(e) => {handlePosition(e)}}>{name[0]}</button>
         </div>
