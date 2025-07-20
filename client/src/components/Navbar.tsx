@@ -8,7 +8,7 @@ const Navbar = () => {
   const[name,setName] = useState("")
   const[position,setPosition] = useState({top:0, left:0})
   const[isOpen,setisOpen] = useState(false)
-  const debounce = useRef(null)
+  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const setDocuments = useStore((state) => state.setDocuments)
 
@@ -33,7 +33,7 @@ const Navbar = () => {
     if (debounce.current) clearTimeout(debounce.current)
     if (filter) {
       try {
-        //@ts-ignore
+
         debounce.current = setTimeout(async () => {
           const response = await AuthService.filterdocuments({filter,token})
           setDocuments(response.data.filtereddocuments)

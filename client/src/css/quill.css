@@ -1,0 +1,13 @@
+
+.ql-toolbar.ql-snow {
+
+    padding-left: 50px;
+    padding-top: 2px;
+    background-color: #e2e8f0
+}
+
+.ql-container {
+  min-height: 100vh;
+  font-size: 15px;
+  border: 1px solid #e2e8f0;
+}

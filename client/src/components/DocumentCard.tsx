@@ -1,11 +1,10 @@
 // import { useNavigate } from "react-router-dom"
-import type { Document } from "../interfaces/interfaces"
 import image from "../assets/logo.png"
 import { useEffect, useState } from "react"
 import AuthService from "../services/user-service"
 import { useStore } from "../store/zustand"
 
-const Documents = () => {
+const DocumentCard = () => {
     const [position,setPosition] = useState({top:0, left:0})
     const [isOpen,setisOpen] = useState(false)
     const[sendData,setsendData] = useState({
@@ -20,7 +19,6 @@ const Documents = () => {
 
   
     const getDocuments = useStore((state) => state.getDocuments)
-       //@ts-ignore
     const documents = useStore((state) => state.documents)
 
 
@@ -55,7 +53,6 @@ const Documents = () => {
   return (
     <div className="flex flex-wrap gap-8"  >
         {
-            //@ts-ignore
             documents.map((doc) => (
                 <div key={doc.id} className="h-[250px] w-[180px] bg-white flex flex-col border border-gray-400 hover:shadow-xl rounded">
                     <div className="h-[200px] border-b border-b-gray-400 p-2 " >
@@ -88,4 +85,4 @@ const Documents = () => {
   )
 }
 
-export default Documents
+export default DocumentCard

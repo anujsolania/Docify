@@ -5,6 +5,7 @@ import Signup from './pages/Signup'
 import Verify from './pages/Verify'
 import Password from './pages/Password'
 import Home from './pages/Home'
+import Document from './pages/Document'
 
 function App() {
 
@@ -19,6 +20,8 @@ function App() {
       <Route path='/forgotpassword' element={<Password/>}></Route>
       <Route path='/forgotpassword/:resetpasswordToken' element={<Password/>}></Route>
       <Route path='/resetpassword/:resetpasswordToken' element={<Password/>}></Route>
+
+      <Route path='/document/:documentId' element={<Document/>}></Route>
 
       <Route path='/' element={<Home/>} ></Route>
     </Routes>

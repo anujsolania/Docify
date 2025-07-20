@@ -1,15 +1,13 @@
-import { useEffect, useState } from "react"
+import { useEffect} from "react"
 import AuthService from "../services/user-service"
-import type { Document } from "../interfaces/interfaces"
-import Documents from "./Documents"
 import { useStore } from "../store/zustand"
+import { useNavigate } from "react-router-dom"
+import DocumentCard from "./DocumentCard"
 
 const Body = () => {
+  const navigate = useNavigate()
 
-  //@ts-ignore
   const getDocuments = useStore((state) => state.getDocuments)
-   //@ts-ignore
-  const documents = useStore((state) => state.documents)
 
   useEffect(() => {
     getDocuments()
@@ -22,7 +20,7 @@ const Body = () => {
       const response = await AuthService.createdocument(token)
       alert(response.data.message)
       getDocuments()
-      // navigate(`/document/${response.data.document.id}`)
+      navigate(`/document/${response.data.document.id}`)
     } catch (error: any) {
       console.error(error)
       alert(error.response.data.error)
@@ -42,7 +40,7 @@ const Body = () => {
         <div className="" >
           <p className="text-lg font-semibold" >Recent Documents</p>
         </div>
-        <Documents ></Documents>
+        <DocumentCard ></DocumentCard>
       </div>
   )
 }
