@@ -1,5 +1,5 @@
 
-import { type VerifyEmailResponse, type ForgotPassResponse, type SignInResponse, type SignupResponse, type ResetPassResponse, type GetUserResponse, type GetDocumentsResponse, type CreateDocumentResponse, type DeleteDocumentResponse, type GetFilterDocsResponse } from "../interfaces/interfaces";
+import { type VerifyEmailResponse, type ForgotPassResponse, type SignInResponse, type SignupResponse, type ResetPassResponse, type GetUserResponse, type GetDocumentsResponse, type CreateDocumentResponse, type DeleteDocumentResponse, type GetFilterDocsResponse,type GetDocOnesResponse } from "../interfaces/interfaces";
 import { API } from "./api";
 
 
@@ -37,11 +37,11 @@ const AuthService = {
     filterdocuments: (payload: {filter:string, token: string}) => {
         return API.get<GetFilterDocsResponse>(`/api/v1/document/?filter=${payload.filter}`,{headers: {authorization: payload.token}})
     },
-    updatetitle: ({numericdocumentId,token,title}: {numericdocumentId: number,token: string,title: string} ) => {
-        return API.put(`/api/v1/document/update/${numericdocumentId}`,{title},{headers: {authorization: token}})
-    },
     updatecontent: (token: string,payload: {numericdocumentId: number,title?: string,content?: string}) => {
         return API.put(`/api/v1/document/update/${payload.numericdocumentId}`,payload,{headers: {authorization: token}})
+    },
+    getdocumentone: (token:string, numericdocumentId:number) => {
+        return API.get<GetDocOnesResponse>(`/api/v1/document/${numericdocumentId}`,{headers: {authorization: token}})
     }
 
 }

@@ -42,6 +42,7 @@ const QuillEditor = () => {
   // const content = useStore((state) => state.content)
   const setContent = useStore((state) => state.setContent)
 
+
   useEffect(() => {
     if (!divRef.current) return
     if (!quillRef.current) {
@@ -51,8 +52,28 @@ const QuillEditor = () => {
     quillRef.current.on("text-change", async () => {
       const html = quillRef.current?.root.innerHTML || ""
       setContent(html)
-      await AuthService.updatecontent(token, {numericdocumentId,content:html})
+      try {
+        await AuthService.updatecontent(token, {numericdocumentId,content:html}) as any
+      } catch (error) {
+        console.error(error)
+      }
     })
+  },[])
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await AuthService.getdocumentone(token,numericdocumentId)
+
+        if (quillRef.current) {
+          quillRef.current.root.innerHTML = response.data.document.content as string
+        }
+
+      } catch (error) {
+        alert("Failed to load document content")
+        console.error("Failed to load document:", error)
+      }
+    })()
   },[])
 
   

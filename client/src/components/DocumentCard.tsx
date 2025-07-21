@@ -3,6 +3,7 @@ import image from "../assets/logo.png"
 import { useEffect, useState } from "react"
 import AuthService from "../services/user-service"
 import { useStore } from "../store/zustand"
+import { useNavigate } from "react-router-dom"
 
 const DocumentCard = () => {
     const [position,setPosition] = useState({top:0, left:0})
@@ -11,7 +12,7 @@ const DocumentCard = () => {
         documentId: 0,
         token: ""
     })
-    // const navigate = useNavigate()
+    const navigate = useNavigate()
 
     useEffect(() => {
         getDocuments()
@@ -54,7 +55,8 @@ const DocumentCard = () => {
     <div className="flex flex-wrap gap-8"  >
         {
             documents.map((doc) => (
-                <div key={doc.id} className="h-[250px] w-[180px] bg-white flex flex-col border border-gray-400 hover:shadow-xl rounded">
+                <div key={doc.id} className="h-[250px] w-[180px] bg-white flex flex-col border border-gray-400 hover:shadow-xl rounded"
+                onClick={() => navigate(`/document/${doc.id}`)}>
                     <div className="h-[200px] border-b border-b-gray-400 p-2 " >
                     <p>Content</p>
                     </div>

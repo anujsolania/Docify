@@ -1,7 +1,7 @@
 import express from "express";
 import { documentSchema, docValidator } from "../validate/document.validate";
 import { Authorization } from "../middleware/authorization.middleware";
-import { alldocuments, createdocument,deletedocument, updatedocument} from "../actions/document.actions";
+import { alldocuments, createdocument,deletedocument, getdocumentone, updatedocument} from "../actions/document.actions";
 const docRouter = express.Router()
 
 docRouter.post("/", Authorization,createdocument)

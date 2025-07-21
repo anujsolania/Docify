@@ -111,8 +111,26 @@ export const updatedocument = async (req:Request, res:Response) => {
         })
         return res.status(200).json({message: "Title updated"}) 
     } catch (error: unknown) {
+        console.error(error)
         if (error instanceof Error) return res.status(400).json({error:( error as Error).message})
         return res.status(400).json({ error: String(error) })
     }
 }
 
+export const getdocumentone = async (req: Request, res:Response) => {
+    const {documentId} = req.params
+
+    try {
+        const document = await prisma.document.findFirst({
+            where: {
+                id: Number(documentId)
+            }
+        })
+        if (!document) return res.status(400).json({error: "document not found"})
+
+        return res.status(200).json({document})
+    } catch (error) {
+        console.log(error)
+        return res.status(400).json({error: (error as Error).message})
+    }
+}

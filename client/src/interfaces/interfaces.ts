@@ -49,4 +49,8 @@ export interface GetFilterDocsResponse {
     filtereddocuments: Document[]
 }
 
+export interface GetDocOnesResponse {
+    document: Document
+}
+
 // export type ForgotPasswordPayload = string
