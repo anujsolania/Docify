@@ -81,3 +81,38 @@ export const deletedocument = async (req: CustomRequest, res:Response) => {
         return res.status(400).json({ error: String(error) })
     }
 }
+
+export const updatedocument = async (req:Request, res:Response) => {
+    const {documentId} = req.params
+
+    const{title,content} = req.body
+
+    if (!documentId) return res.status(400).json({error: "DocumentId not received"})
+
+    try {
+        if (!title) {
+            await prisma.document.update({
+            where: {
+                id: Number(documentId)
+            },
+            data: {
+                content: content
+            }
+        })
+        return res.status(200).json({message: "Content updated"})
+        }
+        await prisma.document.update({
+            where: {
+                id: Number(documentId)
+            },
+            data: {
+                title: title
+            }
+        })
+        return res.status(200).json({message: "Title updated"}) 
+    } catch (error: unknown) {
+        if (error instanceof Error) return res.status(400).json({error:( error as Error).message})
+        return res.status(400).json({ error: String(error) })
+    }
+}
+

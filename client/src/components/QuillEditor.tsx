@@ -3,6 +3,9 @@ import Quill from 'quill';
 import "quill/dist/quill.snow.css";
 import { useEffect, useRef } from "react";
 import "../css/quill.css"
+import { useStore } from '../store/zustand';
+import AuthService from '../services/user-service';
+import { useParams } from 'react-router-dom';
 
 const toolbarOptions = [
   ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
@@ -26,15 +29,33 @@ const toolbarOptions = [
 ];
 
 
+
+
 const QuillEditor = () => {
   const divRef = useRef<HTMLDivElement | null>(null)
-  const quillFlag = useRef<Quill | null>(null)
+  const quillRef = useRef<Quill | null>(null)
+
+  const {documentId} = useParams()
+  const numericdocumentId = Number(documentId)
+  const token = sessionStorage.getItem("token") as string
+
+  // const content = useStore((state) => state.content)
+  const setContent = useStore((state) => state.setContent)
 
   useEffect(() => {
-    if (divRef.current && !quillFlag.current) {
-      quillFlag.current = new Quill(divRef.current,{theme: "snow",modules: {toolbar: toolbarOptions}})
+    if (!divRef.current) return
+    if (!quillRef.current) {
+      quillRef.current = new Quill(divRef.current,{theme: "snow",modules: {toolbar: toolbarOptions}})
     }
+
+    quillRef.current.on("text-change", async () => {
+      const html = quillRef.current?.root.innerHTML || ""
+      setContent(html)
+      await AuthService.updatecontent(token, {numericdocumentId,content:html})
+    })
   },[])
+
+  
 
   return (
     <div ref={divRef} ></div>

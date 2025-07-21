@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
-import z, { ZodAny, ZodSchema, ZodTypeAny } from "zod";
+import z, { ZodTypeAny } from "zod";
 
 export const documentSchema = z.object({
-    title: z.string().trim(),
-    content: z.string().trim()
+    title: z.string().trim().optional(),
+    content: z.string().trim().optional()
 }) 
 
 export function docValidator(schema: ZodTypeAny) {

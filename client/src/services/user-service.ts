@@ -36,7 +36,14 @@ const AuthService = {
     },
     filterdocuments: (payload: {filter:string, token: string}) => {
         return API.get<GetFilterDocsResponse>(`/api/v1/document/?filter=${payload.filter}`,{headers: {authorization: payload.token}})
+    },
+    updatetitle: ({numericdocumentId,token,title}: {numericdocumentId: number,token: string,title: string} ) => {
+        return API.put(`/api/v1/document/update/${numericdocumentId}`,{title},{headers: {authorization: token}})
+    },
+    updatecontent: (token: string,payload: {numericdocumentId: number,title?: string,content?: string}) => {
+        return API.put(`/api/v1/document/update/${payload.numericdocumentId}`,payload,{headers: {authorization: token}})
     }
+
 }
 
 export default AuthService

@@ -6,13 +6,18 @@ import type { Document } from '../interfaces/interfaces'
 
 type StoreState = {
   documents: Document[]
-  getDocuments: () => Promise<void>
   setDocuments: (docs: Document[]) => void
+  getDocuments: () => Promise<void>
+  title: string,
+  setTitle: (titlee: string) => void
+  content: string
+  setContent: (contentt: string) => void
 }
 
 
 export const useStore = create<StoreState>((set) => ({
     documents: [],
+    setDocuments: (docs) => set({ documents: docs }),
     getDocuments: async () => {
     try {
       const token = sessionStorage.getItem("token") as string
@@ -20,7 +25,9 @@ export const useStore = create<StoreState>((set) => ({
       set({ documents: response.data.documents })
     } catch (error) {
       console.error("Error fetching:", error)
-    }
-  },
-  setDocuments: (docs) => set({ documents: docs })
+    }},
+    title: "",
+    setTitle: (titlee) => set({title: titlee}),
+    content: "",
+    setContent: (contentt) => set({content: contentt}),
 }))
