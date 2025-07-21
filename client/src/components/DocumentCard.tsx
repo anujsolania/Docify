@@ -21,6 +21,7 @@ const DocumentCard = () => {
   
     const getDocuments = useStore((state) => state.getDocuments)
     const documents = useStore((state) => state.documents)
+    const setContent = useStore((state) => state.setContent)
 
 
     const handlePosition = (e: React.MouseEvent, docId: number) => {
@@ -51,17 +52,26 @@ const DocumentCard = () => {
     }
   }
 
+  function stripHtml(html: string) {
+    const tempdiv = document.createElement("div")
+    tempdiv.innerHTML = html
+    return tempdiv.innerText
+  }
+
   return (
     <div className="flex flex-wrap gap-8"  >
         {
             documents.map((doc) => (
-                <div key={doc.id} className="h-[250px] w-[180px] bg-white flex flex-col border border-gray-400 hover:shadow-xl rounded"
-                onClick={() => navigate(`/document/${doc.id}`)}>
-                    <div className="h-[200px] border-b border-b-gray-400 p-2 " >
-                    <p>Content</p>
+                <div key={doc.id} className="h-[250px] w-[180px] bg-white flex flex-col border border-gray-400 hover:shadow-xl rounded">
+                    <div className="h-[200px] border-b border-b-gray-400 p-2 " 
+                    onClick={() =>{
+                    setContent(doc.content || "") 
+                    navigate(`/document/${doc.id}`)
+                    }} >
+                    <p className="text-[3px]" >{stripHtml(doc.content || "")}</p>
                     </div>
                     <div className="flex flex-col gap-3 p-3" >
-                        <div className="text-sm h-[10px]" >{doc.title}</div>
+                        <div className="text-sm h-[10px]" >{doc.title || "Untitled document"}</div>
                         <div className="flex gap-3" >
                         <img src={image} className="h-6 m-auto" ></img>
                         <p className="text-sm text-gray-600 font-extralight m-auto" >05 June 2026</p>

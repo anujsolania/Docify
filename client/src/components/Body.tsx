@@ -9,6 +9,8 @@ const Body = () => {
 
   const getDocuments = useStore((state) => state.getDocuments)
 
+  const setContent = useStore((state) => state.setContent)
+
   useEffect(() => {
     getDocuments()
   },[])
@@ -19,7 +21,7 @@ const Body = () => {
       if (!token) return alert("User is not authenticated");
       const response = await AuthService.createdocument(token)
       alert(response.data.message)
-      getDocuments()
+      setContent("")
       navigate(`/document/${response.data.document.id}`)
     } catch (error: any) {
       console.error(error)

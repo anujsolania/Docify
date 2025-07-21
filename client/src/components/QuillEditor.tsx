@@ -40,7 +40,7 @@ const QuillEditor = () => {
   const numericdocumentId = Number(documentId)
   const token = sessionStorage.getItem("token") as string
 
-  // const content = useStore((state) => state.content)
+  const content = useStore((state) => state.content)
   const setContent = useStore((state) => state.setContent)
 
 
@@ -74,20 +74,26 @@ const QuillEditor = () => {
     }
   },[])
 
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const response = await AuthService.getdocumentone(token,numericdocumentId)
+
+  //       if (quillRef.current) {
+  //         quillRef.current.root.innerHTML = response.data.document.content as string
+  //       }
+
+  //     } catch (error) {
+  //       alert("Failed to load document content")
+  //       console.error("Failed to load document:", error)
+  //     }
+  //   })()
+  // },[])
+
   useEffect(() => {
-    (async () => {
-      try {
-        const response = await AuthService.getdocumentone(token,numericdocumentId)
-
-        if (quillRef.current) {
-          quillRef.current.root.innerHTML = response.data.document.content as string
-        }
-
-      } catch (error) {
-        alert("Failed to load document content")
-        console.error("Failed to load document:", error)
+      if (quillRef.current) {
+        quillRef.current.root.innerHTML = content
       }
-    })()
   },[])
 
   
