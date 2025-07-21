@@ -34,6 +34,7 @@ const toolbarOptions = [
 const QuillEditor = () => {
   const divRef = useRef<HTMLDivElement | null>(null)
   const quillRef = useRef<Quill | null>(null)
+  const debounce = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const {documentId} = useParams()
   const numericdocumentId = Number(documentId)
@@ -49,15 +50,28 @@ const QuillEditor = () => {
       quillRef.current = new Quill(divRef.current,{theme: "snow",modules: {toolbar: toolbarOptions}})
     }
 
-    quillRef.current.on("text-change", async () => {
-      const html = quillRef.current?.root.innerHTML || ""
-      setContent(html)
-      try {
-        await AuthService.updatecontent(token, {numericdocumentId,content:html}) as any
-      } catch (error) {
-        console.error(error)
+  const dataTobackend = () => {
+    if (debounce.current) clearTimeout(debounce.current)
+    try {
+      debounce.current = setTimeout(() => {
+        (async () => {
+        const html = quillRef.current?.root.innerHTML || ""
+        setContent(html)
+        await AuthService.updatecontent(token, {numericdocumentId,content:html}) as any 
+        })()
+      },1000)
+    } catch (error) {
+      console.error(error)
+      alert("error while sending data to backend")
+    }
+  }
+    quillRef.current.on("text-change",dataTobackend)
+
+    return () => {
+      if (quillRef.current) {
+        quillRef.current.off("text-change",dataTobackend)
       }
-    })
+    }
   },[])
 
   useEffect(() => {
