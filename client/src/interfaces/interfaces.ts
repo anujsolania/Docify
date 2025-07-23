@@ -49,7 +49,7 @@ export interface GetFilterDocsResponse {
     filtereddocuments: Document[]
 }
 
-export interface GetDocOnesResponse {
+export interface GetDocOneResponse {
     document: Document
 }
 

@@ -14,15 +14,13 @@ const DocumentCard = () => {
     })
     const navigate = useNavigate()
 
+    const getDocuments = useStore((state) => state.getDocuments)
+    const documents = useStore((state) => state.documents)
+    // const setContent = useStore((state) => state.setContent)
+
     useEffect(() => {
         getDocuments()
     },[])
-
-  
-    const getDocuments = useStore((state) => state.getDocuments)
-    const documents = useStore((state) => state.documents)
-    const setContent = useStore((state) => state.setContent)
-
 
     const handlePosition = (e: React.MouseEvent, docId: number) => {
         const rect = e.currentTarget.getBoundingClientRect()
@@ -65,7 +63,6 @@ const DocumentCard = () => {
                 <div key={doc.id} className="h-[250px] w-[180px] bg-white flex flex-col border border-gray-400 hover:shadow-xl rounded">
                     <div className="h-[200px] border-b border-b-gray-400 p-2 " 
                     onClick={() =>{
-                    setContent(doc.content || "") 
                     navigate(`/document/${doc.id}`)
                     }} >
                     <p className="text-[3px]" >{stripHtml(doc.content || "")}</p>

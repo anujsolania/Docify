@@ -11,6 +11,7 @@ const Navbar = () => {
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const setDocuments = useStore((state) => state.setDocuments)
+  const getDocuments = useStore((state) => state.getDocuments)
 
   const navigate = useNavigate()
 
@@ -31,7 +32,9 @@ const Navbar = () => {
 
   const filterDocuments = async (filter: string) => {
     if (debounce.current) clearTimeout(debounce.current)
-    if (filter) {
+    if (filter === "") {
+      getDocuments()
+    } else {
       try {
 
         debounce.current = setTimeout(async () => {

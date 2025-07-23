@@ -9,6 +9,6 @@ docRouter.get("/",Authorization,alldocuments)
 // docRouter.get("/search",Authorization,searchdocuments)
 docRouter.delete("/delete/:documentId",Authorization,deletedocument)
 docRouter.put("/update/:documentId",docValidator(documentSchema), Authorization,updatedocument)
-// docRouter.get("/:documentId",Authorization,getdocumentone)
+docRouter.get("/:documentId",Authorization,getdocumentone)
 
 export default docRouter

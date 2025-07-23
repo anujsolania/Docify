@@ -1,8 +1,30 @@
 
+import { useEffect } from "react";
 import Navbar from "../components/Navbar";
 import QuillEditor from "../components/QuillEditor";
+import AuthService from "../services/user-service";
+import { useParams } from "react-router-dom";
+import { useStore } from "../store/zustand";
+
 
 const Document = () => {
+
+  const token = sessionStorage.getItem("token") as string
+  const {documentId} = useParams()
+  const numericdocumentId = Number(documentId)
+
+  const setContent = useStore((state) => state.setContent)
+
+    const getdocumentone = async () => {
+      try {
+        const response = await AuthService.getdocumentone(token,numericdocumentId)
+        setContent(response.data.document.content as string)
+      } catch (error) {
+        console.error(error)
+        alert("Error while getdocumentone data")
+      }
+    }
+    getdocumentone()
 
   return (
      <div className="bg-gray-300 min-h-screen w-screen flex flex-col" >
