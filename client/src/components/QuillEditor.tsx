@@ -41,7 +41,6 @@ const QuillEditor = () => {
   const token = sessionStorage.getItem("token") as string
 
   const content = useStore((state) => state.content)
-  // const setContent = useStore((state) => state.setContent)
 
 
   useEffect(() => {
@@ -56,7 +55,6 @@ const QuillEditor = () => {
       debounce.current = setTimeout(() => {
         (async () => {
         const html = quillRef.current?.root.innerHTML as string
-        // setContent(html)
         await AuthService.updatecontent(token, {numericdocumentId,content:html}) as any 
         })()
       },1000)
@@ -74,24 +72,7 @@ const QuillEditor = () => {
     }
   },[])
 
-  // useEffect(() => {
-  //   (async () => {
-  //     try {
-  //       const response = await AuthService.getdocumentone(token,numericdocumentId)
-
-  //       if (quillRef.current) {
-  //         quillRef.current.root.innerHTML = response.data.document.content as string
-  //       }
-
-  //     } catch (error) {
-  //       alert("Failed to load document content")
-  //       console.error("Failed to load document:", error)
-  //     }
-  //   })()
-  // },[])
-
   useEffect(() => {
-    alert("quill page")
     if (quillRef.current) {
         quillRef.current.root.innerHTML = content
     }
