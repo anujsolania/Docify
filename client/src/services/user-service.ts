@@ -37,7 +37,7 @@ const AuthService = {
     filterdocuments: (payload: {filter?:string, token: string}) => {
         return API.get<GetFilterDocsResponse>(`/api/v1/document/?filter=${payload.filter}`,{headers: {authorization: payload.token}})
     },
-    updatecontent: (token: string,payload: {numericdocumentId: number,title?: string,content?: string}) => {
+    updatedocument: (token: string,payload: {numericdocumentId: number,title?: string,content?: string}) => {
         return API.put(`/api/v1/document/update/${payload.numericdocumentId}`,payload,{headers: {authorization: token}})
     },
     getdocumentone: (token:string, numericdocumentId:number) => {

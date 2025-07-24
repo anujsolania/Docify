@@ -65,9 +65,9 @@ const DocumentCard = () => {
                     onClick={() =>{
                     navigate(`/document/${doc.id}`)
                     }} >
-                    <p className="text-[3px]" >{stripHtml(doc.content || "")}</p>
+                    <p className="text-[3px] overflow-auto" >{stripHtml(doc.content || "")}</p>
                     </div>
-                    <div className="flex flex-col gap-3 p-3" >
+                    <div className="flex flex-col gap-3 p-3">
                         <div className="text-sm h-[10px]" >{doc.title || "Untitled document"}</div>
                         <div className="flex gap-3" >
                         <img src={image} className="h-6 m-auto" ></img>

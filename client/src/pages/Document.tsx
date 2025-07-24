@@ -1,6 +1,5 @@
 
 import { useEffect } from "react";
-import Navbar from "../components/Navbar";
 import QuillEditor from "../components/QuillEditor";
 import AuthService from "../services/user-service";
 import { useParams } from "react-router-dom";
@@ -15,17 +14,21 @@ const Document = () => {
   const numericdocumentId = Number(documentId)
 
   const setContent = useStore((state) => state.setContent)
+  const setTitle = useStore((state) => state.setTitle)
 
+  useEffect(() => {
     const getdocumentone = async () => {
       try {
         const response = await AuthService.getdocumentone(token,numericdocumentId)
         setContent(response.data.document.content as string)
+        setTitle(response.data.document.title as string)
       } catch (error) {
         console.error(error)
         alert("Error while getdocumentone data")
       }
     }
     getdocumentone()
+  },[])
 
   return (
      <div className="bg-gray-300 min-h-screen w-screen flex flex-col" >

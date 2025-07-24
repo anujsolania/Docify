@@ -55,7 +55,7 @@ const QuillEditor = () => {
       debounce.current = setTimeout(() => {
         (async () => {
         const html = quillRef.current?.root.innerHTML as string
-        await AuthService.updatecontent(token, {numericdocumentId,content:html}) as any 
+        await AuthService.updatedocument(token, {numericdocumentId,content:html}) as any 
         })()
       },1000)
     } catch (error) {
