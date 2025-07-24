@@ -10,6 +10,7 @@ const DocumentNavbar = () => {
 //   const[position,setPosition] = useState({top:0, left:0})
 //   const[isOpen,setisOpen] = useState(false)
 const debounce = useRef<ReturnType<typeof setTimeout> | null> (null)
+const[showShare,setshowShare] = useState(false)
 
 const title = useStore((state) => state.title)
 const setTitle = useStore((state) => state.setTitle)
@@ -77,15 +78,36 @@ const numericdocumentId = Number(documentId)
             </div>
         </div>
         <div className="flex justify-end gap-10">
-            <button className="bg-blue-600 rounded-full px-6 text-white">Share</button>
+            <button className="bg-blue-600 rounded-full px-6 text-white" onClick={() => setshowShare(true)} >Share</button>
             <button className="bg-blue-400 h-10 w-10 rounded-full text-white text-2xl m-auto border border-blue-600">{name[0]}</button>
         </div>
         { 
-        //   isOpen && (
-        //         <div className="absolute  bg-white border border-gray-300 rounded" style={{top: position.top, left: position.left}}>
-        //             <p className="hover:bg-gray-100 p-1.5">Logout</p>
-        //         </div>
-        //   )
+          showShare && (
+              <div className="fixed inset-0 flex items-center justify-center  bg-gray-700/50 z-10">
+                <div className="bg-white p-6 rounded shadow-lg flex flex-col h-[400px] w-[70%] sm:w-[50%] lg:w-[40%] gap-4">
+                 <p className="text-lg font-semibold" >Share Document</p>
+                 <div>
+                  <p className="" >Email:</p>
+                  <input className="border border-gray-300 rounded w-full p-1" ></input>
+                 </div>
+                 <div>
+                  <p>Collaborators:</p>
+                  <button className="bg-gray-100 h-[30px] rounded w-full p-1 shadow" ></button>
+                 </div>
+                 <div>
+                  <p>Permission:</p>
+                  <select className="w-full p-1 border border-gray-300 rounded" >
+                    <option>VIEW</option>
+                     <option>EDIT</option>
+                  </select>
+                  <div className="flex justify-end gap-2 mt-5" >
+                    <button className="p-2 rounded border border-gray-300">Cancel</button>
+                    <button className="bg-sky-600 p-2 rounded text-white" >Share</button>
+                  </div>
+                 </div>
+                </div>
+              </div>
+          )
         }
     </div>
   )
