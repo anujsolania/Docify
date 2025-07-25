@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { CustomRequest } from "../interfaces/interfacess";
 import { error } from "console";
+import { SendMail } from "../smtp-config";
 
 const prisma = new PrismaClient()
 
@@ -132,5 +133,67 @@ export const getdocumentone = async (req: Request, res:Response) => {
     } catch (error) {
         console.log(error)
         return res.status(400).json({error: (error as Error).message})
+    }
+}
+
+export const sharedocument = async (req: CustomRequest, res:Response) => {
+    const {documentId} = req.params
+    const {email,permission} = req.body
+
+    try {
+        const document = await prisma.document.findFirst({
+            where: {
+                id: Number(documentId)
+            },
+            select: {
+                userId: true,
+                user: true
+            }
+        })
+        if (document?.userId != req.userId) return res.status(400).json({error: "You are not authorized to share this doc"})
+        
+        const user = await prisma.user.findFirst({
+            where: {
+                email: email
+            }
+        })
+        if (!user) return res.status(400).json({error: "user not found"})
+        
+        const sharedocument = await prisma.documentuser.findFirst({
+            where: {
+                docId: Number(documentId),
+                userId: user.id
+            }
+        })
+        if (sharedocument) {
+            if (sharedocument.permission == permission) return res.status(200).json({message: "You have already shared this doc to this user"})
+            
+            await prisma.documentuser.update({
+                where: {
+                    id: sharedocument.id
+                },
+                data: {
+                    permission: permission
+                }
+            })
+            await SendMail({
+                from: process.env.EMAIL,
+                to: email,
+                subject: `${document?.user.name} shared a document with you with ${permission} access`,
+                text: `Hi ${user.name}, You can access the document here: ${process.env.LINK}/document/${documentId}`
+            })
+        }
+        await prisma.documentuser.create({
+            data: {
+                docId: Number(documentId),
+                userId: user.id,
+                permission: permission
+            }
+        })
+        return res.status(200).json({message: "Document shared successfully"})
+
+    } catch (error) {
+        console.error(error)
+        return res.status(400).json({error: "Error while sharing document"})
     }
 }

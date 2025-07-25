@@ -1,7 +1,7 @@
 import express from "express";
-import { documentSchema, docValidator } from "../validate/document.validate";
+import { documentSchema, docValidator, shareDocSchema } from "../validate/document.validate";
 import { Authorization } from "../middleware/authorization.middleware";
-import { alldocuments, createdocument,deletedocument, getdocumentone, updatedocument} from "../actions/document.actions";
+import { alldocuments, createdocument,deletedocument, getdocumentone, sharedocument, updatedocument} from "../actions/document.actions";
 const docRouter = express.Router()
 
 docRouter.post("/", Authorization,createdocument)
@@ -10,5 +10,6 @@ docRouter.get("/",Authorization,alldocuments)
 docRouter.delete("/delete/:documentId",Authorization,deletedocument)
 docRouter.put("/update/:documentId",docValidator(documentSchema), Authorization,updatedocument)
 docRouter.get("/:documentId",Authorization,getdocumentone)
+docRouter.post("/share/:documentId",Authorization,docValidator(shareDocSchema),sharedocument)
 
 export default docRouter

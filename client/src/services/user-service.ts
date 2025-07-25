@@ -1,5 +1,5 @@
 
-import { type VerifyEmailResponse, type ForgotPassResponse, type SignInResponse, type SignupResponse, type ResetPassResponse, type GetUserResponse, type GetDocumentsResponse, type CreateDocumentResponse, type DeleteDocumentResponse, type GetFilterDocsResponse,type GetDocOneResponse } from "../interfaces/interfaces";
+import { type VerifyEmailResponse, type ForgotPassResponse, type SignInResponse, type SignupResponse, type ResetPassResponse, type GetUserResponse, type GetDocumentsResponse, type CreateDocumentResponse, type DeleteDocumentResponse, type GetFilterDocsResponse,type GetDocOneResponse,type ShareDocument } from "../interfaces/interfaces";
 import { API } from "./api";
 
 
@@ -42,8 +42,10 @@ const AuthService = {
     },
     getdocumentone: (token:string, numericdocumentId:number) => {
         return API.get<GetDocOneResponse>(`/api/v1/document/${numericdocumentId}`,{headers: {authorization: token}})
+    },
+    sharedocument: (token:string, numericdocumentId:number, email:string, permission:string) => {
+        return API.post<ShareDocument>(`/api/v1/document/share/${numericdocumentId}`,{email,permission},{headers: {authorization: token}})
     }
-
 }
 
 export default AuthService

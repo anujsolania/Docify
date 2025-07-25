@@ -53,4 +53,8 @@ export interface GetDocOneResponse {
     document: Document
 }
 
+export interface ShareDocument {
+    message: string
+}
+
 // export type ForgotPasswordPayload = string

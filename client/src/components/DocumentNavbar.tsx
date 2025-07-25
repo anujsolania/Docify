@@ -12,13 +12,16 @@ const DocumentNavbar = () => {
 const debounce = useRef<ReturnType<typeof setTimeout> | null> (null)
 const[showShare,setshowShare] = useState(false)
 
+const[email,setEmail] = useState("")
+const[permission,setPermission] = useState("")
+
 const title = useStore((state) => state.title)
 const setTitle = useStore((state) => state.setTitle)
 
 const {documentId} = useParams()
 const numericdocumentId = Number(documentId)
 
-  const token = sessionStorage.getItem("token") as string
+const token = sessionStorage.getItem("token") as string
   
   useEffect(() => {
    (async () => {
@@ -55,6 +58,16 @@ const numericdocumentId = Number(documentId)
 //     })
 //     setisOpen(!isOpen)
 //   }
+const sharedocument = async () => {
+  try {
+    const response = await AuthService.sharedocument(token,numericdocumentId,email,permission)
+    alert(response.data.message)
+    setshowShare(!showShare)
+  } catch (error: any) {
+    console.error(error)
+    alert(error.response.data.error)
+  }
+}
 
   return (
     <div className="w-screen h-[50px] bg-white flex items-center justify-between p-10">
@@ -84,11 +97,11 @@ const numericdocumentId = Number(documentId)
         { 
           showShare && (
               <div className="fixed inset-0 flex items-center justify-center  bg-gray-700/50 z-10">
-                <div className="bg-white p-6 rounded shadow-lg flex flex-col h-[400px] w-[70%] sm:w-[50%] lg:w-[40%] gap-4">
+                <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col min-h-[400px] w-[70%] sm:w-[50%] lg:w-[40%] gap-6">
                  <p className="text-lg font-semibold" >Share Document</p>
                  <div>
                   <p className="" >Email:</p>
-                  <input className="border border-gray-300 rounded w-full p-1" ></input>
+                  <input className="border border-gray-300 rounded w-full p-1" value={email} onChange={(e) => setEmail(e.target.value)} ></input>
                  </div>
                  <div>
                   <p>Collaborators:</p>
@@ -96,13 +109,16 @@ const numericdocumentId = Number(documentId)
                  </div>
                  <div>
                   <p>Permission:</p>
-                  <select className="w-full p-1 border border-gray-300 rounded" >
-                    <option>VIEW</option>
-                     <option>EDIT</option>
+                  <select className="w-full p-1 border border-gray-300 rounded" 
+                  value={permission} onChange={(e) => setPermission(e.target.value)}>
+                    <option value="" >Select permission</option>
+                    <option value="VIEW" >VIEW</option>
+                    <option value="EDIT">EDIT</option>
                   </select>
                   <div className="flex justify-end gap-2 mt-5" >
-                    <button className="p-2 rounded border border-gray-300">Cancel</button>
-                    <button className="bg-sky-600 p-2 rounded text-white" >Share</button>
+                    <button className="p-2 rounded border border-gray-300" onClick={() => setshowShare(!showShare)} >Cancel</button>
+                    <button className="bg-sky-600 p-2 rounded text-white"
+                    onClick={sharedocument} >Share</button>
                   </div>
                  </div>
                 </div>

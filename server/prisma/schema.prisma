@@ -20,6 +20,7 @@ model User {
   password   String
   isVerified Boolean?  @default(false)
   documents  Document[]
+  documentuser Documentuser[]
 }
 
 model Document {
@@ -29,5 +30,21 @@ model Document {
   updatedAt DateTime  @updatedAt
   userId    Int    
   user      User   @relation(fields: [userId],references: [id])
+  documentuser Documentuser[]
+}
+
+enum Permission {
+  VIEW
+  EDIT
+}
+
+
+model Documentuser {
+  id         Int @id @default(autoincrement())
+  userId     Int
+  docId      Int
+  permission Permission
+  user       User @relation(fields: [userId],references: [id])
+  document   Document @relation(fields: [docId],references: [id])
 }
 
