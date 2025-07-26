@@ -8,10 +8,12 @@ type StoreState = {
   documents: Document[]
   setDocuments: (docs: Document[]) => void
   getDocuments: () => Promise<void>
-  title: string,
+  title: string
   setTitle: (titlee: string) => void
   content: string
   setContent: (contentt: string) => void
+  showShare: boolean
+  setshowShare: (valuee: boolean) => void
 }
 
 
@@ -30,4 +32,6 @@ export const useStore = create<StoreState>((set) => ({
     setTitle: (titlee) => set({title: titlee}),
     content: "",
     setContent: (contentt) => set({content: contentt}),
+    showShare: false,
+    setshowShare: (valuee) => set({showShare: valuee})
 }))

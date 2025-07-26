@@ -4,14 +4,17 @@ import { useEffect, useState } from "react"
 import AuthService from "../services/user-service"
 import { useStore } from "../store/zustand"
 import { useNavigate } from "react-router-dom"
+import ShowShare from "./ShowShare"
 
 const DocumentCard = () => {
     const [position,setPosition] = useState({top:0, left:0})
     const [isOpen,setisOpen] = useState(false)
-    const[sendData,setsendData] = useState({
-        documentId: 0,
-        token: ""
-    })
+
+    const[docId,setdocId] = useState(0)
+
+    const showShare = useStore((state) => state.showShare)
+    const setshowShare = useStore((state) => state.setshowShare)
+        
     const navigate = useNavigate()
 
     const getDocuments = useStore((state) => state.getDocuments)
@@ -29,10 +32,7 @@ const DocumentCard = () => {
                 left: rect.left + window.scrollX
             })
             setisOpen(!isOpen)
-            setsendData({
-                documentId: docId,
-                token: sessionStorage.getItem("token") as string
-            })
+            setdocId(docId)
     }
 
     const deletedocument = async () => {
@@ -40,7 +40,7 @@ const DocumentCard = () => {
       setisOpen(!isOpen)
       const token = sessionStorage.getItem("token");
       if (!token) return alert("Token is missingggg");
-      const response = await AuthService.deletedocument(sendData)
+      const response = await AuthService.deletedocument(token,docId)
       alert(response.data.message)
       getDocuments()
       // navigate(`/document/${response.data.document.id}`)
@@ -86,9 +86,12 @@ const DocumentCard = () => {
                 <div className="absolute  bg-white border border-gray-300 rounded" style={{top: position.top, left: position.left}}>
                     <p className="border-b border-b-gray-300 hover:bg-gray-100 p-1.5" 
                     onClick={deletedocument}>Delete</p>
-                    <p className="hover:bg-gray-100 p-1.5">Share</p>
+                    <p className="hover:bg-gray-100 p-1.5" onClick={() => setshowShare(true)} >Share</p>
                 </div>
             )
+        }
+        {
+            showShare &&  <ShowShare numericdocumentId={docId} />
         }
     </div>
   )

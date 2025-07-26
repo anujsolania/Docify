@@ -31,8 +31,8 @@ const AuthService = {
     createdocument: (token: string) => {
         return API.post<CreateDocumentResponse>("/api/v1/document/",{},{headers: {authorization: token}})
     },
-    deletedocument: (payload: {documentId: number,token: string}) => {
-        return API.delete<DeleteDocumentResponse>(`/api/v1/document/delete/${payload.documentId}`,{headers: {authorization: payload.token}})
+    deletedocument: (token: string,documentId: number) => {
+        return API.delete<DeleteDocumentResponse>(`/api/v1/document/delete/${documentId}`,{headers: {authorization: token}})
     },
     filterdocuments: (payload: {filter?:string, token: string}) => {
         return API.get<GetFilterDocsResponse>(`/api/v1/document/?filter=${payload.filter}`,{headers: {authorization: payload.token}})
