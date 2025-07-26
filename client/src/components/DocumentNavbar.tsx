@@ -49,15 +49,7 @@ const token = sessionStorage.getItem("token") as string
         alert("Error while updating title")
     }
   }
-
-//   const handlePosition = (e: React.MouseEvent) => {
-//     const rect = e.currentTarget.getBoundingClientRect()
-//     setPosition({
-//       top: rect.bottom +  window.scrollY,
-//       left: rect.left + window.scrollX + (-50)
-//     })
-//     setisOpen(!isOpen)
-//   }
+  
 const sharedocument = async () => {
   try {
     const response = await AuthService.sharedocument(token,numericdocumentId,email,permission)

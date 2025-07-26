@@ -20,8 +20,8 @@ const Document = () => {
     const getdocumentone = async () => {
       try {
         const response = await AuthService.getdocumentone(token,numericdocumentId)
-        setContent(response.data.document.content as string)
-        setTitle(response.data.document.title as string)
+        setContent(response.data.document.content ?? "")
+        setTitle(response.data.document.title ?? "Untitled document")
       } catch (error) {
         console.error(error)
         alert("Error while getdocumentone data")
