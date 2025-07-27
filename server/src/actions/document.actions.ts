@@ -190,6 +190,12 @@ export const sharedocument = async (req: CustomRequest, res:Response) => {
                 permission: permission
             }
         })
+        await SendMail({
+                from: process.env.EMAIL,
+                to: email,
+                subject: `${document?.user.name} shared a document with you with ${permission} access`,
+                text: `Hi ${user.name}, You can access the document here: ${process.env.LINK}/document/${documentId}`
+        })
         return res.status(200).json({message: "Document shared successfully"})
 
     } catch (error) {

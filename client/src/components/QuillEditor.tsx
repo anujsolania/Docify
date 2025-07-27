@@ -1,11 +1,12 @@
 
-import Quill from 'quill';
+import Quill, { Delta } from 'quill';
 import "quill/dist/quill.snow.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "../css/quill.css"
 import { useStore } from '../store/zustand';
 import AuthService from '../services/user-service';
 import { useParams } from 'react-router-dom';
+import { io, Socket } from "socket.io-client"
 
 const toolbarOptions = [
   ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
@@ -35,6 +36,9 @@ const QuillEditor = () => {
   const divRef = useRef<HTMLDivElement | null>(null)
   const quillRef = useRef<Quill | null>(null)
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null)
+  
+  const[quill,setQuill] = useState<Quill | null>()
+  const[socket,setSocket] = useState<Socket | null >()
 
   const {documentId} = useParams()
   const numericdocumentId = Number(documentId)
@@ -42,41 +46,62 @@ const QuillEditor = () => {
 
   const content = useStore((state) => state.content)
 
+  // const dataTobackend = () => {
+  //   if (debounce.current) clearTimeout(debounce.current)
+  //   try {
+  //     debounce.current = setTimeout(() => {
+  //       (async () => {
+  //       const html = quillRef.current?.root.innerHTML as string
+  //       await AuthService.updatedocument(token, {numericdocumentId,content:html}) as any 
+  //       })()
+  //     },1000)
+  //   } catch (error) {
+  //     console.error(error)
+  //     alert("error while sending data to backend")
+  //   }
+  // }
+
+
 
   useEffect(() => {
-    if (!divRef.current) return
     if (!quillRef.current) {
-      quillRef.current = new Quill(divRef.current,{theme: "snow",modules: {toolbar: toolbarOptions}})
+      quillRef.current = new Quill(divRef.current!,{theme: "snow",modules: {toolbar: toolbarOptions}})
     }
 
-  const dataTobackend = () => {
-    if (debounce.current) clearTimeout(debounce.current)
-    try {
-      debounce.current = setTimeout(() => {
-        (async () => {
-        const html = quillRef.current?.root.innerHTML as string
-        await AuthService.updatedocument(token, {numericdocumentId,content:html}) as any 
-        })()
-      },1000)
-    } catch (error) {
-      console.error(error)
-      alert("error while sending data to backend")
+    const socketServer = io("http://localhost:3000",{
+      query: {
+        token: token,
+        documentId: documentId
+      }
+    })
+
+    const handleChange = (delta: Delta,oldDelta: Delta, source: string) => {
+      if (source !== "user") return
+      socketServer.emit("send-changes",delta)
     }
-  }
-    quillRef.current.on("text-change",dataTobackend)
+
+    //send changes
+    quillRef.current.on("text-change",handleChange)
+
+    const receiveChange = (delta: Delta) => {
+      quillRef.current!.updateContents(delta)
+    }
+    //receive changes
+    socketServer.on("receive-changes",receiveChange)
 
     return () => {
-      if (quillRef.current) {
-        quillRef.current.off("text-change",dataTobackend)
-      }
+      quillRef.current?.off("text-change",handleChange)
+      socketServer.off("receive-changes",receiveChange)
+      socketServer.disconnect()
+
     }
   },[])
 
-  useEffect(() => {
-    if (quillRef.current) {
-        quillRef.current.root.innerHTML = content
-    }
-  },[content])
+  // useEffect(() => {
+  //   if (quillRef.current) {
+  //       quillRef.current.root.innerHTML = content
+  //   }
+  // },[content])
 
   return (
     <div ref={divRef} ></div>

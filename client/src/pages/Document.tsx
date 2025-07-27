@@ -28,6 +28,11 @@ const Document = () => {
       }
     }
     getdocumentone()
+
+    return () => {
+      setContent("")
+      setTitle("")
+    }
   },[])
 
   return (
