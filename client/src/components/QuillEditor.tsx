@@ -46,20 +46,20 @@ const QuillEditor = () => {
 
   const content = useStore((state) => state.content)
 
-  // const dataTobackend = () => {
-  //   if (debounce.current) clearTimeout(debounce.current)
-  //   try {
-  //     debounce.current = setTimeout(() => {
-  //       (async () => {
-  //       const html = quillRef.current?.root.innerHTML as string
-  //       await AuthService.updatedocument(token, {numericdocumentId,content:html}) as any 
-  //       })()
-  //     },1000)
-  //   } catch (error) {
-  //     console.error(error)
-  //     alert("error while sending data to backend")
-  //   }
-  // }
+  const dataTobackend = () => {
+    if (debounce.current) clearTimeout(debounce.current)
+    try {
+      debounce.current = setTimeout(() => {
+        (async () => {
+        const html = quillRef.current?.root.innerHTML as string
+        await AuthService.updatedocument(token, {numericdocumentId,content:html}) as any 
+        })()
+      },1000)
+    } catch (error) {
+      console.error(error)
+      alert("error while sending data to backend")
+    }
+  }
 
 
 
@@ -78,6 +78,7 @@ const QuillEditor = () => {
     const handleChange = (delta: Delta,oldDelta: Delta, source: string) => {
       if (source !== "user") return
       socketServer.emit("send-changes",delta)
+      dataTobackend()
     }
 
     //send changes
@@ -90,18 +91,18 @@ const QuillEditor = () => {
     socketServer.on("receive-changes",receiveChange)
 
     return () => {
-      quillRef.current?.off("text-change",handleChange)
+      quillRef.current?.off("text-change",dataTobackend)
       socketServer.off("receive-changes",receiveChange)
       socketServer.disconnect()
-
+      debounce.current && clearTimeout(debounce.current)
     }
   },[])
 
-  // useEffect(() => {
-  //   if (quillRef.current) {
-  //       quillRef.current.root.innerHTML = content
-  //   }
-  // },[content])
+  useEffect(() => {
+    if (quillRef.current) {
+        quillRef.current.clipboard.dangerouslyPasteHTML(content)
+    }
+  },[content])
 
   return (
     <div ref={divRef} ></div>
