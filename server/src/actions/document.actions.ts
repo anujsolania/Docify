@@ -28,12 +28,25 @@ export const alldocuments = async (req:CustomRequest, res:Response) => {
 
     try { 
         if (!filter) {
-        const documents = await prisma.document.findMany({
-            where : {
-                userId: req.userId
-            }})
-        return res.status(200).json({documents}) 
+        const userwithdocs = await prisma.user.findUnique({
+            where: {
+                id: req.userId
+            },
+            include: {
+                documents: true,
+                documentuser: {
+                    include: {
+                        document: true
+                    }
+                }
+            }
+        })
+        const ownedbyme = userwithdocs?.documents || []
+        const notownedbyme = userwithdocs?.documentuser.map((du) => du.document) || []
+        const ownedbyanyone = [...ownedbyme,...notownedbyme]
+        return res.status(200).json({ownedbyme,notownedbyme, ownedbyanyone}) 
         }
+
         console.log("filter = ",filter)
         const filtereddocuments = await prisma.document.findMany({
             where: {
