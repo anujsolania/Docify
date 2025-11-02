@@ -8,7 +8,11 @@ export const documentSchema = z.object({
 
 export const shareDocSchema = z.object({
     email: z.string().trim().email({message: "invalid email"}),
-    permission: z.enum(["VIEW","EDIT"])
+    // permission: z.enum(["VIEW","EDIT"])
+    permission: z.string().refine(
+        (val) => ["VIEW","EDIT"].includes(val),
+        {message: "Please select a permission"}
+    )
 })
 
 export function docValidator(schema: ZodTypeAny) {

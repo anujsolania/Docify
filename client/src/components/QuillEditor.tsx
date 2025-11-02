@@ -110,3 +110,4 @@ const QuillEditor = () => {
 }
 
 export default QuillEditor
+
