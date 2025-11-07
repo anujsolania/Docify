@@ -33,8 +33,14 @@ export interface Document {
     updatedAt: Date
     userId: number
 }
+export interface Alldocuments {
+  ownedbyme: Document[]
+  notownedbyme: Document[]
+  ownedbyanyone: Document[]
+}
+
 export interface GetDocumentsResponse {
-    documents: Document[]
+  alldocuments: Alldocuments
 }
 
 export interface CreateDocumentResponse {

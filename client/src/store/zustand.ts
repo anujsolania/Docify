@@ -14,17 +14,28 @@ type StoreState = {
   setContent: (contentt: string) => void
   showShare: boolean
   setshowShare: (valuee: boolean) => void
+  filterOption: string
+  setFilterOption: (option: string) => void
 }
 
 
-export const useStore = create<StoreState>((set) => ({
+export const useStore = create<StoreState>((set,get) => ({
     documents: [],
+    filterOption: "Owned by me",
+    setFilterOption: (option) => set({ filterOption: option }),
     setDocuments: (docs) => set({ documents: docs }),
     getDocuments: async () => {
     try {
       const token = sessionStorage.getItem("token") as string
       const response = await AuthService.getdocuments(token)
-      set({ documents: response.data.documents })
+      const filterOption = get().filterOption
+      if (filterOption == "Owned by me") {
+        set({ documents: response.data.alldocuments.ownedbyme })
+      } else if (filterOption == "Not owned by me") {
+        set({ documents: response.data.alldocuments.notownedbyme })
+      } else if (filterOption == "Owned by anyone") {
+        set({ documents: response.data.alldocuments.ownedbyanyone })
+      }
     } catch (error) {
       console.error("Error fetching:", error)
     }},
@@ -33,5 +44,5 @@ export const useStore = create<StoreState>((set) => ({
     content: "",
     setContent: (contentt) => set({content: contentt}),
     showShare: false,
-    setshowShare: (valuee) => set({showShare: valuee})
+    setshowShare: (valuee) => set({showShare: valuee}),
 }))

@@ -44,7 +44,13 @@ export const alldocuments = async (req:CustomRequest, res:Response) => {
         const ownedbyme = userwithdocs?.documents || []
         const notownedbyme = userwithdocs?.documentuser.map((du) => du.document) || []
         const ownedbyanyone = [...ownedbyme,...notownedbyme]
-        return res.status(200).json({ownedbyme,notownedbyme, ownedbyanyone}) 
+
+        const alldocuments = {
+            ownedbyme,
+            notownedbyme,
+            ownedbyanyone
+        }
+        return res.status(200).json({alldocuments}) 
         }
 
         console.log("filter = ",filter)

@@ -44,7 +44,7 @@ const DocumentCard = () => {
       alert(response.data.message)
       getDocuments()
       // navigate(`/document/${response.data.document.id}`)
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error)
       alert(error.response.data.error)
     }
@@ -59,7 +59,7 @@ const DocumentCard = () => {
   return (
     <div className="flex flex-wrap gap-8"  >
         {
-            documents.map((doc) => (
+            documents?.map((doc) => (
                 <div key={doc.id} className="h-[250px] w-[180px] bg-white flex flex-col border border-gray-400 hover:shadow-xl rounded">
                     <div className="h-[200px] border-b border-b-gray-400 p-2 " 
                     onClick={() =>{

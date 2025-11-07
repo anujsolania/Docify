@@ -5,8 +5,11 @@ import { useNavigate } from "react-router-dom"
 import DocumentCard from "./DocumentCard"
 
 const Body = () => {
+  const filterOption = useStore((state) => state.filterOption)
+  const setFilterOption = useStore((state) => state.setFilterOption)
+  const getDocuments = useStore((state) => state.getDocuments)
+
   const navigate = useNavigate()
-  const [filterOption, setFilterOption] = useState<string>("Owned by me")
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
@@ -39,6 +42,7 @@ const Body = () => {
 
   const handleFilterChange = (option: string) => {
     setFilterOption(option)
+    getDocuments()
     setIsDropdownOpen(false)
   }
 
