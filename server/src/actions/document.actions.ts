@@ -222,3 +222,22 @@ export const sharedocument = async (req: CustomRequest, res:Response) => {
         return res.status(400).json({error: "Error while sharing document"})
     }
 }
+
+export const getcollaborators = async (req: CustomRequest, res:Response) => {
+    const {documentId} = req.params
+
+    try {
+        const collaborators = await prisma.documentuser.findMany({
+            where: {
+                docId: Number(documentId)
+            },
+            include: {
+                user: true
+            }
+        })
+        return res.status(200).json({collaborators})
+    } catch (error) {
+        console.error(error)
+        return res.status(400).json({error: "Error while fetching collaborators"})
+    }
+}

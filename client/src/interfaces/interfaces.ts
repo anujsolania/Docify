@@ -64,3 +64,23 @@ export interface ShareDocument {
 }
 
 // export type ForgotPasswordPayload = string
+
+export interface User {
+  id: number
+  name: string
+  email: string
+  password: string
+  isVerified: boolean | null
+}
+
+export interface Collaborator {
+  id: number
+  userId: number
+  docId: number
+  permission: "VIEW" | "EDIT"
+  user: User
+}
+
+export interface GetCollaboratorsResponse {
+  collaborators: Collaborator[]
+}

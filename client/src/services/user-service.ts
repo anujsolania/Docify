@@ -1,5 +1,5 @@
 
-import { type VerifyEmailResponse, type ForgotPassResponse, type SignInResponse, type SignupResponse, type ResetPassResponse, type GetUserResponse, type GetDocumentsResponse, type CreateDocumentResponse, type DeleteDocumentResponse, type GetFilterDocsResponse,type GetDocOneResponse,type ShareDocument } from "../interfaces/interfaces";
+import { type VerifyEmailResponse, type ForgotPassResponse, type SignInResponse, type SignupResponse, type ResetPassResponse, type GetUserResponse, type GetDocumentsResponse, type CreateDocumentResponse, type DeleteDocumentResponse, type GetFilterDocsResponse,type GetDocOneResponse,type ShareDocument, type GetCollaboratorsResponse } from "../interfaces/interfaces";
 import { API } from "./api";
 
 
@@ -45,6 +45,9 @@ const AuthService = {
     },
     sharedocument: (token:string, numericdocumentId:number, email:string, permission:string) => {
         return API.post<ShareDocument>(`/api/v1/document/share/${numericdocumentId}`,{email,permission},{headers: {authorization: token}})
+    },
+    getcollaborators: (token:string, numericdocumentId:number) => {
+        return API.get<GetCollaboratorsResponse>(`/api/v1/document/getcollaborators/${numericdocumentId}`,{headers: {authorization: token}})
     }
 }
 

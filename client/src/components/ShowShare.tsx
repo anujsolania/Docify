@@ -1,6 +1,7 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import AuthService from "../services/user-service"
 import { useStore } from "../store/zustand"
+import type { Collaborator } from "../interfaces/interfaces"
 
 type showShareProps =  {
     numericdocumentId: number
@@ -10,7 +11,9 @@ const ShowShare = ({numericdocumentId}: showShareProps) => {
     const[email,setEmail] = useState("")
     const[permission,setPermission] = useState("")
 
-    const showShare = useStore((state) => state.showShare)
+    const [collaborators, setCollaborators] = useState<Collaborator[]>([])
+
+    // const showShare = useStore((state) => state.showShare)
     const setshowShare = useStore((state) => state.setshowShare)
 
     const token = sessionStorage.getItem("token") as string
@@ -26,6 +29,20 @@ const sharedocument = async () => {
   }
 }
 
+const getcollaborators = async () => {
+  try {
+    const response = await AuthService.getcollaborators(token,numericdocumentId)
+    console.log(response.data.collaborators)
+    setCollaborators(response.data.collaborators)
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+useEffect(() => {
+  getcollaborators()
+},[])
+
   return (
               <div className="fixed inset-0 flex items-center justify-center  bg-gray-700/50 z-10">
                 <div className="bg-white p-6 rounded-lg shadow-lg flex flex-col min-h-[400px] w-[70%] sm:w-[50%] lg:w-[40%] gap-6">
@@ -36,7 +53,17 @@ const sharedocument = async () => {
                  </div>
                  <div>
                   <p>Collaborators:</p>
-                  <button className="bg-gray-100 h-[30px] rounded w-full p-1 shadow" ></button>
+                  <div className="flex flex-col gap-2 mt-2">
+                    {collaborators.map((collaborator) => (
+                      <button 
+                        key={collaborator.id}
+                        className="bg-gray-100 h-[30px] rounded w-full p-1 shadow text-left px-3 flex items-center justify-between"
+                      >
+                        <span>{collaborator.user.email}</span>
+                        <span className="text-xs text-gray-600">{collaborator.permission}</span>
+                      </button>
+                    ))}
+                  </div>
                  </div>
                  <div>
                   <p>Permission:</p>
