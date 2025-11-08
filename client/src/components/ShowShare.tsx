@@ -41,6 +41,10 @@ const getcollaborators = async () => {
 
 useEffect(() => {
   getcollaborators()
+
+  return () => {
+    setCollaborators([])
+  }
 },[])
 
   return (
@@ -54,15 +58,18 @@ useEffect(() => {
                  <div>
                   <p>Collaborators:</p>
                   <div className="flex flex-col gap-2 mt-2">
-                    {collaborators.map((collaborator) => (
+                    {collaborators.length === 0 ? (
+                    <button className="bg-gray-100 h-[30px] rounded w-full p-1 shadow text-sm text-left px-2">No collaborators yet</button>
+                  ) : 
+                  (collaborators.map((collaborator) => (
                       <button 
                         key={collaborator.id}
                         className="bg-gray-100 h-[30px] rounded w-full p-1 shadow text-left px-3 flex items-center justify-between"
                       >
                         <span>{collaborator.user.email}</span>
                         <span className="text-xs text-gray-600">{collaborator.permission}</span>
-                      </button>
-                    ))}
+                      </button>)))
+                    }
                   </div>
                  </div>
                  <div>
