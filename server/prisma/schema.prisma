@@ -45,6 +45,6 @@ model Documentuser {
   docId      Int
   permission Permission
   user       User @relation(fields: [userId],references: [id])
-  document   Document @relation(fields: [docId],references: [id])
+  document   Document @relation(fields: [docId],references: [id], onDelete: Cascade)
 }
 
