@@ -7,6 +7,8 @@ import { useStore } from '../store/zustand';
 import AuthService from '../services/user-service';
 import { useParams } from 'react-router-dom';
 import { io, Socket } from "socket.io-client"
+import QuillCursors from 'quill-cursors';
+Quill.register('modules/cursors', QuillCursors);
 
 const toolbarOptions = [
   ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
@@ -65,7 +67,15 @@ const QuillEditor = () => {
 
   useEffect(() => {
     if (!quillRef.current) {
-      quillRef.current = new Quill(divRef.current!,{theme: "snow",modules: {toolbar: toolbarOptions}})
+      quillRef.current = new Quill(divRef.current!,{
+        theme: "snow",
+        modules: {
+          toolbar: toolbarOptions,
+          // cursors: true,
+          cursors: {
+          transformOnTextChange: true
+        }
+        }})
     }
 
     const socketServer = io("http://localhost:3000",{
@@ -74,6 +84,9 @@ const QuillEditor = () => {
         documentId: documentId
       }
     })
+
+    //get cursor instance
+    const cursors = quillRef.current.getModule("cursors");
 
     const handleChange = (delta: Delta,oldDelta: Delta, source: string) => {
       if (source !== "user") return
@@ -89,6 +102,21 @@ const QuillEditor = () => {
     }
     //receive changes
     socketServer.on("receive-changes",receiveChange)
+
+    quillRef.current.on("selection-change",(range,oldRange,source) => {
+      // if (source !== "user" || !range) return
+      socketServer.emit("cursor-change",{
+        // userId: AuthService.getCurrentUser().id,
+        // username: AuthService.getCurrentUser().username
+        userId: token,
+        range
+      })
+    })
+
+    socketServer.on("cursor-update",({ userId, range }) => {
+      cursors.createCursor(userId, "random", "blue")
+      cursors.moveCursor(userId, range)
+    })
 
     return () => {
       quillRef.current?.off("text-change",dataTobackend)
