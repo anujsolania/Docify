@@ -86,7 +86,7 @@ const token = sessionStorage.getItem("token") as string
                 </div>
             </div>
         </div>
-        <div className="flex justify-end gap-10">
+        <div className="flex justify-end gap-1 sm:gap-4 lg:gap-6" >
             <button className="bg-blue-600 rounded-full px-6 text-white" onClick={() => setshowShare(true)} >Share</button>
             <button className="bg-blue-400 h-10 w-10 rounded-full text-white text-2xl m-auto border border-blue-600">{name[0]}</button>
         </div>

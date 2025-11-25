@@ -1,13 +1,16 @@
 
 import Quill, { Delta } from 'quill';
 import "quill/dist/quill.snow.css";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import "../css/quill.css"
 import { useStore } from '../store/zustand';
 import AuthService from '../services/user-service';
 import { useParams } from 'react-router-dom';
 import { io, Socket } from "socket.io-client"
+import { jwtDecode } from "jwt-decode";
 import QuillCursors from 'quill-cursors';
+import type { TokenPayload } from '../interfaces/interfaces';
+import { getColorForUser, releaseColorForUser } from '../store/colorLogic';
 Quill.register('modules/cursors', QuillCursors);
 
 const toolbarOptions = [
@@ -45,6 +48,7 @@ const QuillEditor = () => {
   const {documentId} = useParams()
   const numericdocumentId = Number(documentId)
   const token = sessionStorage.getItem("token") as string
+  const decodedToken: TokenPayload = jwtDecode(token)
 
   const content = useStore((state) => state.content)
 
@@ -71,10 +75,10 @@ const QuillEditor = () => {
         theme: "snow",
         modules: {
           toolbar: toolbarOptions,
-          // cursors: true,
-          cursors: {
-          transformOnTextChange: true
-        }
+          cursors: true,
+          // cursors: {
+          // transformOnTextChange: true
+        // }
         }})
     }
 
@@ -103,18 +107,30 @@ const QuillEditor = () => {
     //receive changes
     socketServer.on("receive-changes",receiveChange)
 
-    quillRef.current.on("selection-change",(range,oldRange,source) => {
+    const handleSelectionChange = (range: unknown,oldRange: unknown,source: string) => {
       // if (source !== "user" || !range) return
       socketServer.emit("cursor-change",{
         // userId: AuthService.getCurrentUser().id,
         // username: AuthService.getCurrentUser().username
-        userId: token,
+        userId: decodedToken.id,
+        userEmail: decodedToken.email,
         range
       })
-    })
+    }
 
-    socketServer.on("cursor-update",({ userId, range }) => {
-      cursors.createCursor(userId, "random", "blue")
+    //send cursor changes
+    quillRef.current.on("selection-change", handleSelectionChange)
+
+    //receive cursor changes
+    socketServer.on("cursor-update",({ userId, userEmail, range }) => {
+      if (range === null) {
+        cursors.removeCursor(userId)
+        return
+      }
+      if (!cursors.cursors[userId]) {
+        const userColor = getColorForUser(userId);
+        cursors.createCursor(userId, userEmail, userColor)
+      }
       cursors.moveCursor(userId, range)
     })
 
@@ -122,6 +138,7 @@ const QuillEditor = () => {
       quillRef.current?.off("text-change",dataTobackend)
       socketServer.off("receive-changes",receiveChange)
       socketServer.disconnect()
+      releaseColorForUser(String(decodedToken.id));
       debounce.current && clearTimeout(debounce.current)
     }
   },[])
@@ -131,6 +148,7 @@ const QuillEditor = () => {
         quillRef.current.clipboard.dangerouslyPasteHTML(content)
     }
   },[content])
+
 
   return (
     <div ref={divRef} ></div>

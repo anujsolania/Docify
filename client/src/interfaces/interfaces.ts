@@ -84,3 +84,9 @@ export interface Collaborator {
 export interface GetCollaboratorsResponse {
   collaborators: Collaborator[]
 }
+
+
+export interface TokenPayload {
+    email: string
+    id: number
+}
