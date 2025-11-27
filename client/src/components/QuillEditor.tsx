@@ -115,7 +115,7 @@ const QuillEditor = () => {
     socketServer.on("receive-changes",receiveChange)
 
     const handleSelectionChange = (range: unknown,oldRange: unknown,source: string) => {
-      // if (source !== "user" || !range) return
+      if (source !== "user") return
       socketServer.emit("cursor-change",{
         // userId: AuthService.getCurrentUser().id,
         // username: AuthService.getCurrentUser().username
