@@ -20,6 +20,9 @@ const setshowShare = useStore((state) => state.setshowShare)
 const title = useStore((state) => state.title)
 const setTitle = useStore((state) => state.setTitle)
 
+const activeUsers = useStore((state) => state.activeUsers)
+ console.log("users",activeUsers)
+
 const {documentId} = useParams()
 const numericdocumentId = Number(documentId)
 
@@ -87,8 +90,17 @@ const token = sessionStorage.getItem("token") as string
             </div>
         </div>
         <div className="flex justify-end gap-1 sm:gap-4 lg:gap-6" >
-            <button className="bg-blue-600 rounded-full px-6 text-white" onClick={() => setshowShare(true)} >Share</button>
+          <div className="flex gap-4 border" >
+          {
+            activeUsers && activeUsers.map((user, index) => (
+              <button key={`${user.userId}-${index}`} title={user.userEmail} className="bg-blue-400 h-10 w-10 rounded-full text-white text-2xl m-auto border border-blue-600">{user.userEmail[0]}</button>
+            ))
+          }
+          </div>
+          <div className="flex border gap-1" >
+            <button className="bg-blue-600 rounded-full h-full px-6 text-white" onClick={() => setshowShare(true)} >Share</button>
             <button className="bg-blue-400 h-10 w-10 rounded-full text-white text-2xl m-auto border border-blue-600">{name[0]}</button>
+          </div>
         </div>
         { 
           showShare && (<ShowShare numericdocumentId={numericdocumentId} />)

@@ -16,6 +16,9 @@ type StoreState = {
   setshowShare: (valuee: boolean) => void
   filterOption: string
   setFilterOption: (option: string) => void
+
+  activeUsers: { userId: number; userEmail: string }[]
+  setActiveUsers: (users: { userId: number; userEmail: string }[] | ((prev: { userId: number; userEmail: string }[]) => { userId: number; userEmail: string }[])) => void
 }
 
 
@@ -45,4 +48,9 @@ export const useStore = create<StoreState>((set,get) => ({
     setContent: (contentt) => set({content: contentt}),
     showShare: false,
     setshowShare: (valuee) => set({showShare: valuee}),
+
+    activeUsers: [],
+    setActiveUsers: (users) => set((state) => ({
+      activeUsers: typeof users === 'function' ? users(state.activeUsers) : users
+    }))
 }))

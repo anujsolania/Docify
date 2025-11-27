@@ -52,6 +52,9 @@ const QuillEditor = () => {
 
   const content = useStore((state) => state.content)
 
+  const activeUsers = useStore((state) => state.activeUsers)
+  const setActiveUsers = useStore((state) => state.setActiveUsers)
+
   const dataTobackend = () => {
     if (debounce.current) clearTimeout(debounce.current)
     try {
@@ -87,6 +90,10 @@ const QuillEditor = () => {
         token: token,
         documentId: documentId
       }
+    })
+
+    socketServer.on("connect", () => {
+    console.log("Connected to server! Socket ID:", socketServer.id)
     })
 
     //get cursor instance
@@ -134,12 +141,39 @@ const QuillEditor = () => {
       cursors.moveCursor(userId, range)
     })
 
+    //send user that joined
+    socketServer.emit("join-document", {
+      userId: decodedToken.id,
+      userEmail: decodedToken.email
+    })
+
+    //receive user that joined
+    socketServer.on("user-joined", (newUser) => {
+      setActiveUsers((prev) => {
+        // Check if user already exists
+        const userExists = prev.some(user => user.userId === newUser.userId);
+        if (userExists) {
+          return prev;
+        }
+        return [...prev, newUser];
+      });
+    });
+
+    //remove user that disconnected
+    socketServer.on("user-disconnected", (leftUser: { userId: number; userEmail: string }) => {
+      setActiveUsers((prev) => prev.filter(user => user.userId !== leftUser.userId));
+    });
+
     return () => {
       quillRef.current?.off("text-change",dataTobackend)
       socketServer.off("receive-changes",receiveChange)
+      socketServer.off("user-joined")
+      socketServer.off("user-disconnected")
       socketServer.disconnect()
       releaseColorForUser(String(decodedToken.id));
       debounce.current && clearTimeout(debounce.current)
+      // Clear active users when component unmounts
+      setActiveUsers([]);
     }
   },[])
 
