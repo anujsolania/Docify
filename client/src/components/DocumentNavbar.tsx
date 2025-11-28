@@ -4,6 +4,8 @@ import AuthService from "../services/user-service"
 import { useStore } from "../store/zustand"
 import { useNavigate, useParams } from "react-router-dom"
 import ShowShare from "./ShowShare"
+import { jwtDecode } from "jwt-decode"
+import type { TokenPayload } from '../interfaces/interfaces'
 
 
 const DocumentNavbar = () => {
@@ -29,6 +31,10 @@ const numericdocumentId = Number(documentId)
 const navigate = useNavigate()
 
 const token = sessionStorage.getItem("token") as string
+const decodedToken: TokenPayload = jwtDecode(token)
+
+// Filter out current user from active users
+const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
   
   useEffect(() => {
    (async () => {
@@ -92,8 +98,8 @@ const token = sessionStorage.getItem("token") as string
         <div className="flex justify-end gap-1 sm:gap-4 lg:gap-6" >
           <div className="flex gap-4 border" >
           {
-            activeUsers && activeUsers.map((user, index) => (
-              <button key={`${user.userId}-${index}`} title={user.userEmail} className="bg-blue-400 h-10 w-10 rounded-full text-white text-2xl m-auto border border-blue-600">{user.userEmail[0]}</button>
+            otherUsers && otherUsers.map((user) => (
+              <button key={user.userId} title={user.userEmail} className="bg-blue-400 h-10 w-10 rounded-full text-white text-2xl m-auto border border-blue-600">{user.userEmail[0]}</button>
             ))
           }
           </div>

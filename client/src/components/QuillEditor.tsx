@@ -147,31 +147,18 @@ const QuillEditor = () => {
       userEmail: decodedToken.email
     })
 
-    //receive user that joined
-    socketServer.on("user-joined", (newUser) => {
-      setActiveUsers((prev) => {
-        // Check if user already exists
-        const userExists = prev.some(user => user.userId === newUser.userId);
-        if (userExists) {
-          return prev;
-        }
-        return [...prev, newUser];
-      });
-    });
-
-    //remove user that disconnected
-    socketServer.on("user-disconnected", (leftUser: { userId: number; userEmail: string }) => {
-      setActiveUsers((prev) => prev.filter(user => user.userId !== leftUser.userId));
+    //receive active users list updates
+    socketServer.on("active-users-update", (users: { userId: number; userEmail: string }[]) => {
+      setActiveUsers(users);
     });
 
     return () => {
       quillRef.current?.off("text-change",dataTobackend)
       socketServer.off("receive-changes",receiveChange)
-      socketServer.off("user-joined")
-      socketServer.off("user-disconnected")
+      socketServer.off("active-users-update")
       socketServer.disconnect()
       releaseColorForUser(String(decodedToken.id));
-      debounce.current && clearTimeout(debounce.current)
+      if (debounce.current) clearTimeout(debounce.current)
       // Clear active users when component unmounts
       setActiveUsers([]);
     }
