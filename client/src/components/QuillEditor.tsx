@@ -102,6 +102,15 @@ const QuillEditor = () => {
     const handleChange = (delta: Delta,oldDelta: Delta, source: string) => {
       if (source !== "user") return
       socketServer.emit("send-changes",delta)
+
+      const range = quillRef.current!.getSelection()
+      if (range) {
+        socketServer.emit("cursor-change",{
+          userId: decodedToken.id,
+          userEmail: decodedToken.email,
+          range
+        })
+      }
       dataTobackend()
     }
 
@@ -164,9 +173,11 @@ const QuillEditor = () => {
     }
   },[])
 
+  const contentLoaded = useRef(false);
   useEffect(() => {
-    if (quillRef.current) {
+    if (quillRef.current && content && !contentLoaded.current) {
         quillRef.current.clipboard.dangerouslyPasteHTML(content)
+        contentLoaded.current = true;
     }
   },[content])
 

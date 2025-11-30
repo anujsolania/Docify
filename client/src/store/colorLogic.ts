@@ -1,8 +1,15 @@
 
 const COLOR_POOL = [
-  "#F44336", "#E91E63", "#9C27B0", "#673AB7",
-  "#3F51B5", "#2196F3", "#03A9F4", "#00BCD4",
-  "#009688", "#4CAF50"
+  "#FF3B30", // Vivid Red
+  "#FF9500", // Orange
+  "#FFCC00", // Strong Yellow
+  "#34C759", // Bright Green
+  "#00C7BE", // Aqua
+  "#32ADE6", // Sky Blue
+  "#007AFF", // Vivid Blue
+  "#5856D6", // Purple
+  "#AF52DE", // Violet
+  "#FF2D55"  // Pink Red
 ];
 
 const userColorMap = new Map<string, string>(); // userId -> color
