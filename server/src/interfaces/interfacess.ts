@@ -5,3 +5,8 @@ export interface CustomRequest extends Request {
   userEmail?: string
   userName?: string
 }
+
+export interface TokenPayload {
+    id: string;
+    email: string;
+  }
