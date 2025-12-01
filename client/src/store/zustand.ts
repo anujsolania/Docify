@@ -17,6 +17,10 @@ type StoreState = {
   filterOption: string
   setFilterOption: (option: string) => void
 
+  colorOfUser: Map<number, string>
+  setColorOfUser: (userId: number, color: string) => void
+  removeColorOfUser: (userId: number) => void
+
   activeUsers: { userId: number; userEmail: string }[]
   setActiveUsers: (users: { userId: number; userEmail: string }[] | ((prev: { userId: number; userEmail: string }[]) => { userId: number; userEmail: string }[])) => void
 }
@@ -48,6 +52,18 @@ export const useStore = create<StoreState>((set,get) => ({
     setContent: (contentt) => set({content: contentt}),
     showShare: false,
     setshowShare: (valuee) => set({showShare: valuee}),
+
+    colorOfUser: new Map<number, string>(),
+    setColorOfUser: (userId, color) => set((state) => {
+      const newMap = new Map(state.colorOfUser)
+      newMap.set(userId, color)
+      return { colorOfUser: newMap }
+    }),
+    removeColorOfUser: (userId) => set((state) => {
+      const newMap = new Map(state.colorOfUser)
+      newMap.delete(userId)
+      return { colorOfUser: newMap }
+    }),
 
     activeUsers: [],
     setActiveUsers: (users) => set((state) => ({

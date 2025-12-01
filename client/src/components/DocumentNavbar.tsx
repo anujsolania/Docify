@@ -6,6 +6,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import ShowShare from "./ShowShare"
 import { jwtDecode } from "jwt-decode"
 import type { TokenPayload } from '../interfaces/interfaces'
+import { getColorForUser } from "../store/colorLogic"
 
 
 const DocumentNavbar = () => {
@@ -22,8 +23,9 @@ const setshowShare = useStore((state) => state.setshowShare)
 const title = useStore((state) => state.title)
 const setTitle = useStore((state) => state.setTitle)
 
+
+
 const activeUsers = useStore((state) => state.activeUsers)
- console.log("users",activeUsers)
 
 const {documentId} = useParams()
 const numericdocumentId = Number(documentId)
@@ -96,11 +98,18 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
             </div>
         </div>
         <div className="flex justify-end gap-1 sm:gap-4 lg:gap-6" >
-          <div className="flex gap-4 border" >
+          <div className="flex gap-2" >
           {
-            otherUsers && otherUsers.map((user) => (
-              <button key={user.userId} title={user.userEmail} className="bg-blue-400 h-10 w-10 rounded-full text-white text-2xl m-auto border border-blue-600">{user.userEmail[0]}</button>
-            ))
+            otherUsers?.map((user) => {
+              const color = getColorForUser(String(user.userId))
+              return (
+              <button 
+              key={user.userId} 
+              title={user.userEmail}
+              style={{ backgroundColor: color }}
+              className="h-9 w-9 rounded-full text-white text-xl m-auto border border-blue-600">{user.userEmail[0]}</button>
+              )
+            })
           }
           </div>
           <div className="flex border gap-1" >

@@ -144,7 +144,7 @@ const QuillEditor = () => {
         return
       }
       if (!cursors.cursors[userId]) {
-        const userColor = getColorForUser(userId);
+        const userColor = getColorForUser(String(userId));
         cursors.createCursor(userId, userEmail, userColor)
       }
       cursors.moveCursor(userId, range)
