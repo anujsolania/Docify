@@ -119,20 +119,21 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
             {showActiveUsersPopUp ?
             (
               <>
-            <div className="flex sm:hidden" >
+            <div className="flex sm:hidden items-center" >
               <button 
               onClick={() => setShowActiveUsersPopUp(!showActiveUsersPopUp)}
-              className="h-9 w-9 rounded-full bg-gray-300 text-xl font-">
-                ^
+              className="h-9 w-9 rounded-full bg-gray-300 text-2xl font-extralight">
+              <div className="mt-1.5" >^</div>
               </button>
             </div>
-            <ActiveUsersDiv otherUsers={otherUsers} />
+            <ActiveUsersDiv otherUsers={otherUsers} setShowActiveUsersPopUp={setShowActiveUsersPopUp}  />
             </>
             ) :
-            (<div className="flex sm:hidden" >
-              <button 
+            (<div className="flex sm:hidden items-center" >
+              <button
+              title={String(otherUsers.length > 1 ? otherUsers.length + " viewers" : otherUsers.length + " viewer")}
               onClick={() => setShowActiveUsersPopUp(!showActiveUsersPopUp)}
-              className="h-9 w-9 rounded-full bg-gray-300 m-auto text-sm">
+              className="h-9 w-9 rounded-full bg-gray-300 text-sm border border-blue-600">
                 {otherUsers.length}
               </button>
             </div>)

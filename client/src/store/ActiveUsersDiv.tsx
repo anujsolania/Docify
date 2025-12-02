@@ -1,7 +1,22 @@
+import { useEffect, useRef } from "react";
 import { getColorForUser } from "./colorLogic"
 
 
-const ActiveUsersDiv = ({otherUsers}) => {
+const ActiveUsersDiv = ({otherUsers , setShowActiveUsersPopUp }) => {
+
+  const popupRef = useRef<HTMLDivElement | null>(null);
+
+    // Optional: click outside to close
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (popupRef.current && !popupRef.current.contains(e.target)) {
+        setShowActiveUsersPopUp(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
     return (
         <div className="absolute top-15 right-10 z-50">
 
