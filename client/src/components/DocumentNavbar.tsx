@@ -7,6 +7,7 @@ import ShowShare from "./ShowShare"
 import { jwtDecode } from "jwt-decode"
 import type { TokenPayload } from '../interfaces/interfaces'
 import { getColorForUser } from "../store/colorLogic"
+import ActiveUsersDiv from "../store/activeUsersDiv"
 
 
 const DocumentNavbar = () => {
@@ -26,6 +27,8 @@ const setTitle = useStore((state) => state.setTitle)
 
 
 const activeUsers = useStore((state) => state.activeUsers)
+
+const [showActiveUsersPopUp,setShowActiveUsersPopUp] = useState(false)
 
 const {documentId} = useParams()
 const numericdocumentId = Number(documentId)
@@ -99,8 +102,9 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
         </div>
         <div className="flex justify-end gap-1 sm:gap-4 lg:gap-6" >
           <div className="flex gap-2" >
-          {
-            otherUsers?.map((user) => {
+            {/* for larger screens */}
+            <div className="hidden sm:flex gap-2" >
+          {otherUsers?.map((user) => {
               const color = getColorForUser(String(user.userId))
               return (
               <button 
@@ -109,10 +113,32 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
               style={{ backgroundColor: color }}
               className="h-9 w-9 rounded-full text-white text-xl m-auto border border-blue-600">{user.userEmail[0]}</button>
               )
-            })
-          }
+            })}
+            </div>
+            {/* for smaller screens */}
+            {showActiveUsersPopUp ?
+            (
+              <>
+            <div className="flex sm:hidden" >
+              <button 
+              onClick={() => setShowActiveUsersPopUp(!showActiveUsersPopUp)}
+              className="h-9 w-9 rounded-full bg-gray-300 text-xl font-">
+                ^
+              </button>
+            </div>
+            <ActiveUsersDiv otherUsers={otherUsers} />
+            </>
+            ) :
+            (<div className="flex sm:hidden" >
+              <button 
+              onClick={() => setShowActiveUsersPopUp(!showActiveUsersPopUp)}
+              className="h-9 w-9 rounded-full bg-gray-300 m-auto text-sm">
+                {otherUsers.length}
+              </button>
+            </div>)
+            }
           </div>
-          <div className="flex border gap-1" >
+          <div className="flex gap-1" >
             <button className="bg-blue-600 rounded-full h-full px-6 text-white" onClick={() => setshowShare(true)} >Share</button>
             <button className="bg-blue-400 h-10 w-10 rounded-full text-white text-2xl m-auto border border-blue-600">{name[0]}</button>
           </div>
