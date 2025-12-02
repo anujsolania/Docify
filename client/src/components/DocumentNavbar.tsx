@@ -29,6 +29,7 @@ const setTitle = useStore((state) => state.setTitle)
 const activeUsers = useStore((state) => state.activeUsers)
 
 const [showActiveUsersPopUp,setShowActiveUsersPopUp] = useState(false)
+const triggerRef = useRef<HTMLDivElement | null>(null)
 
 const {documentId} = useParams()
 const numericdocumentId = Number(documentId)
@@ -103,7 +104,10 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
         <div className="flex justify-end gap-1 sm:gap-4 lg:gap-6" >
           <div className="flex gap-2" >
             {/* for larger screens */}
-            <div className="hidden sm:flex gap-2" >
+            <div
+            ref={triggerRef}
+            onClick={() => setShowActiveUsersPopUp(!showActiveUsersPopUp)}
+            className="hidden sm:flex gap-2" >
           {otherUsers?.map((user) => {
               const color = getColorForUser(String(user.userId))
               return (
@@ -126,7 +130,7 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
               <div className="mt-1.5" >^</div>
               </button>
             </div>
-            <ActiveUsersDiv otherUsers={otherUsers} setShowActiveUsersPopUp={setShowActiveUsersPopUp}  />
+            <ActiveUsersDiv otherUsers={otherUsers} setShowActiveUsersPopUp={setShowActiveUsersPopUp} triggerRef={triggerRef} />
             </>
             ) :
             (<div className="flex sm:hidden items-center" >

@@ -2,14 +2,16 @@ import { useEffect, useRef } from "react";
 import { getColorForUser } from "./colorLogic"
 
 
-const ActiveUsersDiv = ({otherUsers , setShowActiveUsersPopUp }) => {
+const ActiveUsersDiv = ({otherUsers , setShowActiveUsersPopUp, triggerRef }) => {
 
   const popupRef = useRef<HTMLDivElement | null>(null);
 
     // Optional: click outside to close
   useEffect(() => {
     const handleClick = (e) => {
-      if (popupRef.current && !popupRef.current.contains(e.target)) {
+      // Only close if click is outside BOTH the popup AND the trigger div
+      if (popupRef.current && !popupRef.current.contains(e.target) &&
+          (!triggerRef?.current || !triggerRef.current.contains(e.target))) {
         setShowActiveUsersPopUp(false);
       }
     };
@@ -18,7 +20,7 @@ const ActiveUsersDiv = ({otherUsers , setShowActiveUsersPopUp }) => {
   }, []);
 
     return (
-        <div className="absolute top-15 right-10 z-50">
+        <div ref={popupRef} className="absolute top-15 right-10 z-50">
 
     {/* Arrow */}
     {/* <div className="flex justify-end pr-4">
