@@ -55,6 +55,8 @@ const QuillEditor = () => {
   const activeUsers = useStore((state) => state.activeUsers)
   const setActiveUsers = useStore((state) => state.setActiveUsers)
 
+  const permissionOfuser = useStore((state) => state.permissionOfuser)
+
   const dataTobackend = () => {
     if (debounce.current) clearTimeout(debounce.current)
     try {
@@ -83,6 +85,10 @@ const QuillEditor = () => {
           // transformOnTextChange: true
         // }
         }})
+        console.log("PERMISSION:",permissionOfuser)
+      if (permissionOfuser === "VIEW") {
+        quillRef.current.disable()
+      }
     }
 
     const socketServer = io("http://localhost:3000",{
@@ -100,6 +106,7 @@ const QuillEditor = () => {
     const cursors = quillRef.current.getModule("cursors");
 
     const handleChange = (delta: Delta,oldDelta: Delta, source: string) => {
+      if (permissionOfuser === "VIEW") return;
       if (source !== "user") return
       socketServer.emit("send-changes",delta)
 

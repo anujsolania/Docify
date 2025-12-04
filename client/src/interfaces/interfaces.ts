@@ -57,6 +57,7 @@ export interface GetFilterDocsResponse {
 
 export interface GetDocOneResponse {
     document: Document
+    permission: string
 }
 
 export interface ShareDocument {

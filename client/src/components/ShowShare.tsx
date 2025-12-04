@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react"
 import AuthService from "../services/user-service"
 import { useStore } from "../store/zustand"
-import type { Collaborator } from "../interfaces/interfaces"
+import type { Collaborator, TokenPayload } from "../interfaces/interfaces"
+import { jwtDecode } from "jwt-decode"
 
 type showShareProps =  {
     numericdocumentId: number
@@ -17,6 +18,7 @@ const ShowShare = ({numericdocumentId}: showShareProps) => {
     const setshowShare = useStore((state) => state.setshowShare)
 
     const token = sessionStorage.getItem("token") as string
+    //  const decodedToken: TokenPayload = jwtDecode(token)
 
 const sharedocument = async () => {
   try {
@@ -32,8 +34,9 @@ const sharedocument = async () => {
 const getcollaborators = async () => {
   try {
     const response = await AuthService.getcollaborators(token,numericdocumentId)
-    console.log(response.data.collaborators)
-    setCollaborators(response.data.collaborators)
+    const collaborators = response.data.collaborators
+    console.log(collaborators)
+    setCollaborators(collaborators)
   } catch (error) {
     console.error(error)
   }

@@ -15,6 +15,7 @@ const Document = () => {
 
   const setContent = useStore((state) => state.setContent)
   const setTitle = useStore((state) => state.setTitle)
+  const setPermissionOfuser = useStore((state) => state.setPermissionOfuser)
 
   useEffect(() => {
     const getdocumentone = async () => {
@@ -22,6 +23,8 @@ const Document = () => {
         const response = await AuthService.getdocumentone(token,numericdocumentId)
         setContent(response.data.document.content ?? "")
         setTitle(response.data.document.title ?? "Untitled document")
+        console.log("PERMISSION FROM BACKEND:",response.data.permission)
+        setPermissionOfuser(response.data.permission)
       } catch (error) {
         console.error(error)
         alert("Error while getdocumentone data")

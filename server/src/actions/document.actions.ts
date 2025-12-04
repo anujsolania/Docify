@@ -148,7 +148,18 @@ export const getdocumentone = async (req: Request, res:Response) => {
         })
         if (!document) return res.status(400).json({error: "document not found"})
 
-        return res.status(200).json({document})
+        const docUserRelation  = await prisma.documentuser.findFirst({
+            where: {
+                docId: Number(documentId),
+                userId: (req as CustomRequest).userId
+            }
+        })
+
+        const permission = docUserRelation ? docUserRelation.permission : "no permission found"
+
+        console.log("permission =",permission)
+
+        return res.status(200).json({document, permission})
     } catch (error) {
         console.log(error)
         return res.status(400).json({error: (error as Error).message})

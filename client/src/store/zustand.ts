@@ -16,6 +16,8 @@ type StoreState = {
   setshowShare: (valuee: boolean) => void
   filterOption: string
   setFilterOption: (option: string) => void
+  permissionOfuser: string
+  setPermissionOfuser: (permission: string) => void
 
   colorOfUser: Map<number, string>
   setColorOfUser: (userId: number, color: string) => void
@@ -52,6 +54,8 @@ export const useStore = create<StoreState>((set,get) => ({
     setContent: (contentt) => set({content: contentt}),
     showShare: false,
     setshowShare: (valuee) => set({showShare: valuee}),
+    permissionOfuser: "",
+    setPermissionOfuser: (permissionOfuser) => set({permissionOfuser}),
 
     colorOfUser: new Map<number, string>(),
     setColorOfUser: (userId, color) => set((state) => {
