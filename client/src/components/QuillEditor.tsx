@@ -72,23 +72,21 @@ const QuillEditor = () => {
     }
   }
 
-
-
   useEffect(() => {
+    // Wait for permission to be loaded before initializing Quill
+    if (!permissionOfuser) return;
+
     if (!quillRef.current) {
       quillRef.current = new Quill(divRef.current!,{
         theme: "snow",
         modules: {
-          toolbar: toolbarOptions,
+          toolbar: permissionOfuser === "VIEW" ? false : toolbarOptions,
           cursors: true,
           // cursors: {
           // transformOnTextChange: true
         // }
         }})
         console.log("PERMISSION:",permissionOfuser)
-      if (permissionOfuser === "VIEW") {
-        quillRef.current.disable()
-      }
     }
 
     const socketServer = io("http://localhost:3000",{
@@ -178,7 +176,13 @@ const QuillEditor = () => {
       // Clear active users when component unmounts
       setActiveUsers([]);
     }
-  },[])
+  },[permissionOfuser])
+
+  useEffect(() => {
+    if (permissionOfuser === "VIEW") {
+        quillRef.current?.disable()
+    } 
+  },[permissionOfuser])
 
   const contentLoaded = useRef(false);
   useEffect(() => {
@@ -190,7 +194,28 @@ const QuillEditor = () => {
 
 
   return (
-    <div ref={divRef} ></div>
+    <>
+     {permissionOfuser === "VIEW" && (
+       <div style={{
+         backgroundColor: '#f0f0f0',
+         padding: '12px 20px',
+         borderRadius: '4px',
+         marginBottom: '10px',
+         display: 'flex',
+         alignItems: 'center',
+         gap: '10px',
+         border: '1px solid #d0d0d0'
+       }}>
+         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+           <circle cx="12" cy="12" r="3"></circle>
+         </svg>
+         <span style={{ color: '#666', fontWeight: '500' }}>View Only Mode - You cannot edit this document</span>
+       </div>
+     )}
+     <div ref={divRef} ></div>
+    </>
+   
   )
 }
 
