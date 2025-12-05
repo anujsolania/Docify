@@ -1,9 +1,12 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import AuthService from "../services/user-service"
+import { useStore } from "../store/zustand"
 
 function Signin() {
     const navigate = useNavigate()
+
+    const setAuth = useStore((state) => state.setAuth)
 
     const [postInputs,setpostInputs] = useState({
         email: "",
@@ -40,8 +43,7 @@ function Signin() {
                     onClick={async () => {
                         try {
                         const response = await AuthService.signin(postInputs)
-                        const token = response.data.token
-                        sessionStorage.setItem("token",token)
+                        setAuth(response.data.token, response.data.user)
                         alert(response.data.message)
                         navigate("/") 
                         } catch (error: any) {

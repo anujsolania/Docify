@@ -15,13 +15,13 @@ const Navbar = () => {
 
   const navigate = useNavigate()
 
-  const token = sessionStorage.getItem("token") as string
+  const token = useStore((state) => state.token)
+  const logout = useStore((state) => state.logout)
   
   useEffect(() => {
    (async () => {
     try {
-      if (!token) return alert("Token is missingggg");
-      const response = await AuthService.getuser(token)
+      const response = await AuthService.getuser(token!)
       setName(response.data.username)
     } catch (error: any) {
       console.error(error)
@@ -57,8 +57,8 @@ const Navbar = () => {
     setisOpen(!isOpen)
   }
 
-  const logout = () => {
-    sessionStorage.clear()
+  const handlelogout = () => {
+    logout()
     navigate("/signin")
 
   }
@@ -78,7 +78,7 @@ const Navbar = () => {
         {
           isOpen && (
                 <div className="absolute  bg-white border border-gray-300 rounded" style={{top: position.top, left: position.left}}>
-                    <p className="hover:bg-gray-100 p-1.5" onClick={logout} >Logout</p>
+                    <p className="hover:bg-gray-100 p-1.5" onClick={handlelogout} >Logout</p>
                 </div>
           )
         }

@@ -9,6 +9,8 @@ const Body = () => {
   const setFilterOption = useStore((state) => state.setFilterOption)
   const getDocuments = useStore((state) => state.getDocuments)
 
+  const token = useStore((state) => state.token)
+
   const navigate = useNavigate()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -28,9 +30,7 @@ const Body = () => {
 
   const createdocument = async () => {
     try {
-      const token = sessionStorage.getItem("token");
-      if (!token) return alert("User is not authenticated");
-      const response = await AuthService.createdocument(token)
+      const response = await AuthService.createdocument(token!)
       alert(response.data.message)
       // setContent("")
       navigate(`/document/${response.data.document.id}`)

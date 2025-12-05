@@ -9,7 +9,7 @@ import DocumentNavbar from "../components/DocumentNavbar";
 
 const Document = () => {
 
-  const token = sessionStorage.getItem("token") as string
+  const token = useStore((state) => state.token)
   const {documentId} = useParams()
   const numericdocumentId = Number(documentId)
 
@@ -20,7 +20,7 @@ const Document = () => {
   useEffect(() => {
     const getdocumentone = async () => {
       try {
-        const response = await AuthService.getdocumentone(token,numericdocumentId)
+        const response = await AuthService.getdocumentone(token!,numericdocumentId)
         setContent(response.data.document.content ?? "")
         setTitle(response.data.document.title ?? "Untitled document")
         console.log("PERMISSION FROM BACKEND:",response.data.permission)

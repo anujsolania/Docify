@@ -41,9 +41,15 @@ export const signup = async (req: Request, res:Response) => {
 export const signin = async (req: CustomRequest, res:Response) => {
     try {
     console.log(`signin : ${req.userId}`)
-    const token = jwt.sign({email: req.userEmail, id: req.userId},process.env.JWT_KEY as string)
+    const token = jwt.sign({email: req.userEmail, id: req.userId},process.env.JWT_KEY as string, { expiresIn: "12h" })
 
-    return res.status(200).json({message: `Logged In successfully as ${req.userEmail}`,token})
+    const user = await prisma.user.findFirst({
+        where: {
+            id: req.userId
+        }
+    })
+
+    return res.status(200).json({message: `Logged In successfully as ${req.userEmail}`,token, user})
 
     } catch (error) {
         console.error(error)

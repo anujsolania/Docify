@@ -25,6 +25,12 @@ type StoreState = {
 
   activeUsers: { userId: number; userEmail: string }[]
   setActiveUsers: (users: { userId: number; userEmail: string }[] | ((prev: { userId: number; userEmail: string }[]) => { userId: number; userEmail: string }[])) => void
+
+  token: string | null
+  user: any
+  setAuth: (token: string, user: any) => void
+  logout: () => void
+  isAuthenticated: () => boolean
 }
 
 
@@ -35,8 +41,8 @@ export const useStore = create<StoreState>((set,get) => ({
     setDocuments: (docs) => set({ documents: docs }),
     getDocuments: async () => {
     try {
-      const token = sessionStorage.getItem("token") as string
-      const response = await AuthService.getdocuments(token)
+      const token = get().token
+      const response = await AuthService.getdocuments(token!)
       const filterOption = get().filterOption
       if (filterOption == "Owned by me") {
         set({ documents: response.data.alldocuments.ownedbyme })
@@ -72,5 +78,25 @@ export const useStore = create<StoreState>((set,get) => ({
     activeUsers: [],
     setActiveUsers: (users) => set((state) => ({
       activeUsers: typeof users === 'function' ? users(state.activeUsers) : users
-    }))
+    })),
+
+    //AUTH STUFF
+    token: sessionStorage.getItem("token"),
+    user : null,
+
+    setAuth: (token, user) => {
+      sessionStorage.setItem("token", token)
+      set({ token, user })
+    },
+
+    logout: () => {
+      sessionStorage.removeItem("token")
+      set({ token: null, user: null })
+    },
+
+    isAuthenticated: () => {
+      return !!get().token
+    }
+    
+
 }))

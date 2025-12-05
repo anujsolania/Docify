@@ -17,12 +17,12 @@ const ShowShare = ({numericdocumentId}: showShareProps) => {
     // const showShare = useStore((state) => state.showShare)
     const setshowShare = useStore((state) => state.setshowShare)
 
-    const token = sessionStorage.getItem("token") as string
+    const token = useStore((state) => state.token)
     //  const decodedToken: TokenPayload = jwtDecode(token)
 
 const sharedocument = async () => {
   try {
-    const response = await AuthService.sharedocument(token,numericdocumentId,email,permission)
+    const response = await AuthService.sharedocument(token!,numericdocumentId,email,permission)
     alert(response.data.message)
     setshowShare(false)
   } catch (error: any) {
@@ -33,7 +33,7 @@ const sharedocument = async () => {
 
 const getcollaborators = async () => {
   try {
-    const response = await AuthService.getcollaborators(token,numericdocumentId)
+    const response = await AuthService.getcollaborators(token!,numericdocumentId)
     const collaborators = response.data.collaborators
     console.log(collaborators)
     setCollaborators(collaborators)

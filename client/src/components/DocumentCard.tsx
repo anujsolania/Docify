@@ -14,6 +14,8 @@ const DocumentCard = () => {
 
     const showShare = useStore((state) => state.showShare)
     const setshowShare = useStore((state) => state.setshowShare)
+
+    const token = useStore((state) => state.token)
         
     const navigate = useNavigate()
 
@@ -38,9 +40,7 @@ const DocumentCard = () => {
     const deletedocument = async () => {
     try {
       setisOpen(!isOpen)
-      const token = sessionStorage.getItem("token");
-      if (!token) return alert("Token is missingggg");
-      const response = await AuthService.deletedocument(token,docId)
+      const response = await AuthService.deletedocument(token!,docId)
       alert(response.data.message)
       getDocuments()
       // navigate(`/document/${response.data.document.id}`)

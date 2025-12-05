@@ -36,8 +36,8 @@ const numericdocumentId = Number(documentId)
 
 const navigate = useNavigate()
 
-const token = sessionStorage.getItem("token") as string
-const decodedToken: TokenPayload = jwtDecode(token)
+const token = useStore((state) => state.token)
+const decodedToken: TokenPayload = jwtDecode(token!)
 
 // Filter out current user from active users
 const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
@@ -45,8 +45,7 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
   useEffect(() => {
    (async () => {
     try {
-      if (!token) return alert("Token is missingggg");
-      const response = await AuthService.getuser(token)
+      const response = await AuthService.getuser(token!)
       setName(response.data.username)
     } catch (error: any) {
       console.error(error)
@@ -60,7 +59,7 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
     try {
         debounce.current = setTimeout(() => {
            (async () => {
-                await AuthService.updatedocument(token,{numericdocumentId,title})
+                await AuthService.updatedocument(token!,{numericdocumentId,title})
             })()
         }, 1000)
     } catch (error) {

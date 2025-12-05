@@ -1,4 +1,10 @@
 
+export interface User {
+  id: number
+  name: string
+  email: string
+  isVerified: boolean | null
+}
 
 export interface SignupResponse  {
     message: string
@@ -7,6 +13,7 @@ export interface SignupResponse  {
 export interface SignInResponse {
     message: string
     token: string
+    user: User
 }
 
 export interface VerifyEmailResponse {

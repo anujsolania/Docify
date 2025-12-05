@@ -47,8 +47,8 @@ const QuillEditor = () => {
 
   const {documentId} = useParams()
   const numericdocumentId = Number(documentId)
-  const token = sessionStorage.getItem("token") as string
-  const decodedToken: TokenPayload = jwtDecode(token)
+  const token = useStore((state) => state.token)
+  const decodedToken: TokenPayload = jwtDecode(token!)
 
   const content = useStore((state) => state.content)
 
