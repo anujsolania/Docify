@@ -3,12 +3,15 @@ import app from "./index"
 import http from "http"
 import jwt, { JwtPayload } from "jsonwebtoken"
 import { TokenPayload } from "./interfaces/interfacess"
+import dotenv from "dotenv"
+
+dotenv.config()
 
 const server = http.createServer(app)
 
 const io = new Server(server,{
     cors: {
-        origin: "http://localhost:5173",
+        origin: `${process.env.LINK}`,
         methods: ["GET","POST"]
     }
 })
