@@ -44,9 +44,10 @@ const DocumentCard = () => {
       alert(response.data.message)
       getDocuments()
       // navigate(`/document/${response.data.document.id}`)
-    } catch (error: unknown) {
+    } catch (err) {
+      const error = err as any
       console.error(error)
-      alert(error.response.data.error)
+      alert(error?.response?.data?.error ?? "Something went wrong")
     }
   }
 

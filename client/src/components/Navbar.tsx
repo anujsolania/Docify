@@ -38,7 +38,7 @@ const Navbar = () => {
       try {
 
         debounce.current = setTimeout(async () => {
-          const response = await AuthService.filterdocuments({filter,token})
+          const response = await AuthService.filterdocuments({filter,token: token!})
           setDocuments(response.data.filtereddocuments)
         }, 300);
       } catch (error: any) {

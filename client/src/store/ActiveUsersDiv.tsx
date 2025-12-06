@@ -1,17 +1,23 @@
 import { useEffect, useRef } from "react";
 import { getColorForUser } from "./colorLogic"
 
+interface ActiveUsersDivProps {
+  otherUsers: { userId: number; userEmail: string }[];
+  setShowActiveUsersPopUp: (value: boolean) => void;
+  triggerRef: React.RefObject<HTMLDivElement | null>;
+}
 
-const ActiveUsersDiv = ({otherUsers , setShowActiveUsersPopUp, triggerRef }) => {
+
+const ActiveUsersDiv = ({otherUsers , setShowActiveUsersPopUp, triggerRef }: ActiveUsersDivProps) => {
 
   const popupRef = useRef<HTMLDivElement | null>(null);
 
     // Optional: click outside to close
   useEffect(() => {
-    const handleClick = (e) => {
+    const handleClick = (e: globalThis.MouseEvent) => {
       // Only close if click is outside BOTH the popup AND the trigger div
-      if (popupRef.current && !popupRef.current.contains(e.target) &&
-          (!triggerRef?.current || !triggerRef.current.contains(e.target))) {
+      if (popupRef.current && !popupRef.current.contains(e.target as Node) &&
+          (!triggerRef?.current || !triggerRef.current.contains(e.target as Node))) {
         setShowActiveUsersPopUp(false);
       }
     };

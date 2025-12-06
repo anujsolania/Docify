@@ -7,7 +7,7 @@ import ShowShare from "./ShowShare"
 import { jwtDecode } from "jwt-decode"
 import type { TokenPayload } from '../interfaces/interfaces'
 import { getColorForUser } from "../store/colorLogic"
-import ActiveUsersDiv from "../store/activeUsersDiv"
+import ActiveUsersDiv from "../store/ActiveUsersDiv"
 
 
 const DocumentNavbar = () => {

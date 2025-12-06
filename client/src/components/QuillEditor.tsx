@@ -1,12 +1,12 @@
 
 import Quill, { Delta } from 'quill';
 import "quill/dist/quill.snow.css";
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import "../css/quill.css"
 import { useStore } from '../store/zustand';
 import AuthService from '../services/user-service';
 import { useParams } from 'react-router-dom';
-import { io, Socket } from "socket.io-client"
+import { io } from "socket.io-client"
 import { jwtDecode } from "jwt-decode";
 import QuillCursors from 'quill-cursors';
 import type { TokenPayload } from '../interfaces/interfaces';
@@ -42,8 +42,8 @@ const QuillEditor = () => {
   const quillRef = useRef<Quill | null>(null)
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null)
   
-  const[quill,setQuill] = useState<Quill | null>()
-  const[socket,setSocket] = useState<Socket | null >()
+  // const[quill,setQuill] = useState<Quill | null>()
+  // const[socket,setSocket] = useState<Socket | null >()
 
   const {documentId} = useParams()
   const numericdocumentId = Number(documentId)
@@ -52,7 +52,7 @@ const QuillEditor = () => {
 
   const content = useStore((state) => state.content)
 
-  const activeUsers = useStore((state) => state.activeUsers)
+  // const activeUsers = useStore((state) => state.activeUsers)
   const setActiveUsers = useStore((state) => state.setActiveUsers)
 
   const permissionOfuser = useStore((state) => state.permissionOfuser)
@@ -63,7 +63,7 @@ const QuillEditor = () => {
       debounce.current = setTimeout(() => {
         (async () => {
         const html = quillRef.current?.root.innerHTML as string
-        await AuthService.updatedocument(token, {numericdocumentId,content:html}) as any 
+        await AuthService.updatedocument(token!, {numericdocumentId,content:html}) as any 
         })()
       },1000)
     } catch (error) {
@@ -101,9 +101,9 @@ const QuillEditor = () => {
     })
 
     //get cursor instance
-    const cursors = quillRef.current.getModule("cursors");
+    const cursors = quillRef.current.getModule("cursors") as any
 
-    const handleChange = (delta: Delta,oldDelta: Delta, source: string) => {
+    const handleChange = (delta: Delta, source: string) => {
       if (permissionOfuser === "VIEW") return;
       if (source !== "user") return
       socketServer.emit("send-changes",delta)
@@ -128,7 +128,7 @@ const QuillEditor = () => {
     //receive changes
     socketServer.on("receive-changes",receiveChange)
 
-    const handleSelectionChange = (range: unknown,oldRange: unknown,source: string) => {
+    const handleSelectionChange = (range: unknown,source: string) => {
       if (source !== "user") return
       socketServer.emit("cursor-change",{
         // userId: AuthService.getCurrentUser().id,

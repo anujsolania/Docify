@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
 import AuthService from "../services/user-service"
 import { useStore } from "../store/zustand"
-import type { Collaborator, TokenPayload } from "../interfaces/interfaces"
-import { jwtDecode } from "jwt-decode"
+import type { Collaborator } from "../interfaces/interfaces"
 
 type showShareProps =  {
     numericdocumentId: number
