@@ -106,12 +106,10 @@ const QuillEditor = () => {
     const handleChange = (delta: Delta, source: string) => {
       if (permissionOfuser === "VIEW") return;
       if (source !== "user") return
-      console.log("Sending changes:", delta)
       socketServer.emit("send-changes",delta)
 
       const range = quillRef.current!.getSelection()
       if (range) {
-        console.log("Sending cursor change:", { userId: decodedToken.id, range })
         socketServer.emit("cursor-change",{
           userId: decodedToken.id,
           userEmail: decodedToken.email,
@@ -125,7 +123,6 @@ const QuillEditor = () => {
     quillRef.current.on("text-change",handleChange)
 
     const receiveChange = (delta: Delta) => {
-      console.log("Received changes:", delta)
       quillRef.current!.updateContents(delta)
     }
     //receive changes
@@ -147,7 +144,6 @@ const QuillEditor = () => {
 
     //receive cursor changes
     socketServer.on("cursor-update",({ userId, userEmail, range }) => {
-      console.log("Received cursor update:", { userId, userEmail, range })
       if (range === null) {
         cursors.removeCursor(userId)
         return
@@ -171,10 +167,8 @@ const QuillEditor = () => {
     });
 
     return () => {
-      quillRef.current?.off("text-change", handleChange)
-      quillRef.current?.off("selection-change", handleSelectionChange)
-      socketServer.off("receive-changes", receiveChange)
-      socketServer.off("cursor-update")
+      quillRef.current?.off("text-change",dataTobackend)
+      socketServer.off("receive-changes",receiveChange)
       socketServer.off("active-users-update")
       socketServer.disconnect()
       releaseColorForUser(String(decodedToken.id));
