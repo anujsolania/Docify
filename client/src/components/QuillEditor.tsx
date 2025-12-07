@@ -90,7 +90,7 @@ const QuillEditor = () => {
     }
 
     const socketServer = io(import.meta.env.VITE_URL,{
-      query: {
+      auth: {
         token: token,
         documentId: documentId
       }

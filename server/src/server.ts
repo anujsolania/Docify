@@ -20,8 +20,8 @@ const io = new Server(server,{
 const documentUsers = new Map<string, Array<{userId: number, userEmail: string}>>();
 
 io.on("connection", (socket) => {
-    const token = socket.handshake.query.token
-    const documentId = socket.handshake.query.documentId as string
+    const token = socket.handshake.auth.token
+    const documentId = socket.handshake.auth.documentId as string
     console.log("Client connected with token:", token);
     console.log("Document ID:", documentId);
 
