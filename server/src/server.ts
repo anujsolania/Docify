@@ -2,7 +2,6 @@ import { Server } from "socket.io"
 import app from "./index"
 import http from "http"
 import jwt, { JwtPayload } from "jsonwebtoken"
-import { TokenPayload } from "./interfaces/interfacess"
 import dotenv from "dotenv"
 
 dotenv.config()
