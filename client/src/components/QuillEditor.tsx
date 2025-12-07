@@ -1,5 +1,5 @@
 
-import Quill, { Delta } from 'quill';
+import Quill, { Delta, Range } from 'quill';
 import "quill/dist/quill.snow.css";
 import { useEffect, useRef } from "react";
 import "../css/quill.css"
@@ -103,7 +103,7 @@ const QuillEditor = () => {
     //get cursor instance
     const cursors = quillRef.current.getModule("cursors") as any
 
-    const handleChange = (delta: Delta, source: string) => {
+    const handleChange = (delta: Delta,_oldDelta: Delta, source: string) => {
       if (permissionOfuser === "VIEW") return;
       if (source !== "user") return
       socketServer.emit("send-changes",delta)
@@ -128,7 +128,7 @@ const QuillEditor = () => {
     //receive changes
     socketServer.on("receive-changes",receiveChange)
 
-    const handleSelectionChange = (range: unknown,source: string) => {
+    const handleSelectionChange = (range: Range,_oldRange: Range, source: string) => {
       if (source !== "user") return
       socketServer.emit("cursor-change",{
         // userId: AuthService.getCurrentUser().id,
