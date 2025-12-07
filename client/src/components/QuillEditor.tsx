@@ -89,7 +89,7 @@ const QuillEditor = () => {
         console.log("PERMISSION:",permissionOfuser)
     }
 
-    const socketServer = io("http://localhost:3000",{
+    const socketServer = io(import.meta.env.VITE_URL,{
       query: {
         token: token,
         documentId: documentId
