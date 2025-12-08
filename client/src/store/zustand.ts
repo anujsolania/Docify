@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import AuthService from '../services/user-service'
 import type { Document } from '../interfaces/interfaces'
+import { jwtDecode } from 'jwt-decode'
 
 
 
@@ -95,7 +96,31 @@ export const useStore = create<StoreState>((set,get) => ({
     },
 
     isAuthenticated: () => {
-      return !!get().token
+      const token = get().token
+      
+      if (!token) {
+        return false
+      }
+
+      try {
+        // Decode the JWT to get the expiration time
+        const decoded: { exp: number } = jwtDecode(token)
+        
+        // Check if token is expired (exp is in seconds, Date.now() is in milliseconds)
+        const currentTime = Date.now() / 1000
+        
+        if (decoded.exp < currentTime) {
+          // Token is expired, clear it
+          get().logout()
+          return false
+        }
+        
+        return true
+      } catch (error) {
+        // If token can't be decoded, it's invalid
+        get().logout()
+        return false
+      }
     }
     
 
