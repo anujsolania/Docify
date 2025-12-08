@@ -7,7 +7,6 @@ import { CustomRequest } from "../interfaces/interfacess";
 const prisma = new PrismaClient()
 
 export const SignupAuthetication = async (req: Request,res: Response, next: NextFunction) => {
-    if (req.method === "OPTIONS") return next(); // <<< Important for preflight
     const {email} = req.body
 
     try {
@@ -27,7 +26,6 @@ export const SignupAuthetication = async (req: Request,res: Response, next: Next
 }
 
 export const SigninAuthetication = async (req: CustomRequest,res: Response, next: NextFunction) => {
-    if (req.method === "OPTIONS") return next(); // <<< Important for preflight
     const {email, password} = req.body
     
     try {
