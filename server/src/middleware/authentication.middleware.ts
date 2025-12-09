@@ -16,7 +16,7 @@ export const SignupAuthetication = async (req: Request,res: Response, next: Next
         } 
     })
 
-    if (anyuser) res.status(409).json({error: "User with this email already exists"})
+    if (anyuser) return res.status(409).json({error: "User with this email already exists"})
     next()
 
     } catch (error) {
