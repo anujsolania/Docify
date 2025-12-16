@@ -11,6 +11,8 @@ function Signup() {
         password: ""
     })
 
+    const [loading,setLoading] = useState(false)
+
 
     const navigate = useNavigate()
   return (
@@ -47,16 +49,22 @@ function Signup() {
                     }}></input>
                 </div>
                 <div className="mt-1 mb-8">
-                    <button className="w-full bg-sky-600 rounded-lg p-2.5 text-white" 
+                    <button className={`w-full rounded-lg p-2.5 text-white 
+        ${loading ? "bg-sky-400 cursor-not-allowed" : "bg-sky-600"}`}
+                    disabled={loading} 
                     onClick={async () => {
+                        if (loading) return;
                         try {
+                        setLoading(true)
                         const response = await AuthService.signup(postInputs)
                         alert(response.data.message) 
                         navigate("/verifyemail") 
                         } catch (error: any) {
                             alert(error.response.data.error)
+                        } finally {
+                            setLoading(false)
                         }
-                    }}>Sign Up</button>
+                    }}>{loading ? "Signing Up..." : "Sign Up" }</button>
                 </div>
             </div>
         </div>
