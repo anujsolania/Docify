@@ -69,7 +69,7 @@ export const verifyemail = async (req: Request, res:Response) => {
             }
         })
 
-        if (userr?.isVerified) return res.status(200).json({message: "User is already verified"})
+        if (userr?.isVerified) return res.status(200).json({verified: userr.isVerified,message: "User is already verified"})
 
         const user = await prisma.user.update({
             where: {
