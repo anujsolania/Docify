@@ -19,6 +19,7 @@ export const SendMail = async (mailOptions: Mail.Options) => {
         const response = await transporter.sendMail(mailOptions)
         return response
     } catch (error) {
-        throw error
+        console.error("Email send failed:", error);
+        return null; // do NOT crash API
     }
 }
