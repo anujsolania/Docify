@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { PrismaClient } from '@prisma/client';
 import bcrypt, { compare } from "bcrypt";
-import { SendMail } from "../smtp-config";
+import { SendMail } from "../sendgrid-config";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { CustomRequest } from "../interfaces/interfacess";
 
@@ -24,7 +24,7 @@ export const signup = async (req: Request, res:Response) => {
         }})
 
         await SendMail({
-            from: process.env.EMAIL,
+            from: `Docify <${process.env.EMAIL}>`,
             to: email,
             subject: "Welcome to Docify - Verify Your Email",
             html: `
@@ -117,7 +117,7 @@ export const forgotpassword = async (req: CustomRequest,res: Response) => {
         const resetPasswordToken = jwt.sign({email: req.body.email},process.env.RESETPASSWORD_KEY as string,{ expiresIn: "1h" })
 
         await SendMail({
-        from: process.env.EMAIL,
+        from: `Docify <${process.env.EMAIL}>`,
         to: req.body.email,
         subject: "Reset Your Docify Password",
         html: `
