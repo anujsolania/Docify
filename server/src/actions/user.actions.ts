@@ -26,8 +26,29 @@ export const signup = async (req: Request, res:Response) => {
         await SendMail({
             from: process.env.EMAIL,
             to: email,
-            subject: "Welcome to Docify, verify your email",
-            text: `Hi ${user.name}, Please verify your email by clicking on the following link: ${process.env.LINK}/verifyemail/${verificationToken}`
+            subject: "Welcome to Docify - Verify Your Email",
+            html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                    <h2 style="color: #333;">Welcome to Docify, ${user.name}! 👋</h2>
+                    <p style="color: #666; font-size: 16px;">
+                        Thank you for signing up. Please verify your email address to get started.
+                    </p>
+                    <div style="margin: 30px 0;">
+                        <a href="${process.env.LINK}/verifyemail/${verificationToken}" 
+                           style="background-color: #4F46E5; color: white; padding: 12px 30px; 
+                                  text-decoration: none; border-radius: 5px; display: inline-block;">
+                            Verify Email
+                        </a>
+                    </div>
+                    <p style="color: #999; font-size: 14px;">
+                        This link will expire in 1 hour.
+                    </p>
+                    <p style="color: #999; font-size: 12px;">
+                        If you didn't sign up for Docify, please ignore this email.
+                    </p>
+                </div>
+            `,
+            text: `Hi ${user.name}, Welcome to Docify! Please verify your email by clicking on this link: ${process.env.LINK}/verifyemail/${verificationToken}`
         })
 
         return res.status(201).json({message: "User created successfully"})
@@ -98,8 +119,29 @@ export const forgotpassword = async (req: CustomRequest,res: Response) => {
         await SendMail({
         from: process.env.EMAIL,
         to: req.body.email,
-        subject: "Reset your password",
-        text: `Hii ${req.userName}, Please reset your password by clicking on the following link: ${process.env.LINK}/resetpassword/${resetPasswordToken}`
+        subject: "Reset Your Docify Password",
+        html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #333;">Hi ${req.userName},</h2>
+                <p style="color: #666; font-size: 16px;">
+                    We received a request to reset your password for your Docify account.
+                </p>
+                <div style="margin: 30px 0;">
+                    <a href="${process.env.LINK}/resetpassword/${resetPasswordToken}" 
+                       style="background-color: #4F46E5; color: white; padding: 12px 30px; 
+                              text-decoration: none; border-radius: 5px; display: inline-block;">
+                        Reset Password
+                    </a>
+                </div>
+                <p style="color: #999; font-size: 14px;">
+                    This link will expire in 1 hour.
+                </p>
+                <p style="color: #999; font-size: 12px;">
+                    If you didn't request this, please ignore this email.
+                </p>
+            </div>
+        `,
+        text: `Hi ${req.userName}, Please reset your password by clicking on this link: ${process.env.LINK}/resetpassword/${resetPasswordToken}`
     })
     return res.status(200).json({message: "Reset password link sent successfully"})
     } catch (error) {
