@@ -239,14 +239,15 @@ export const sharedocument = async (req: CustomRequest, res:Response) => {
                 `,
                 text: `Hi ${user.name}, ${document?.user.name} updated your access to "${document?.title}" with ${permission} permission. You can access the document here: ${process.env.LINK}/document/${documentId}`
             })
-        }
-        await prisma.documentuser.create({
+        } else {
+            await prisma.documentuser.create({
             data: {
                 docId: Number(documentId),
                 userId: user.id,
                 permission: permission
             }
-        })
+            })
+        }
         await SendMail({
                 from: `Docify <${process.env.EMAIL}>` as string,
                 to: email as string,
