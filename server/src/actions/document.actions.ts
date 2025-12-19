@@ -177,7 +177,8 @@ export const sharedocument = async (req: CustomRequest, res:Response) => {
             },
             select: {
                 userId: true,
-                user: true
+                user: true,
+                title: true
             }
         })
         if (document?.userId != req.userId) return res.status(400).json({error: "You are not authorized to share this doc"})
@@ -207,10 +208,36 @@ export const sharedocument = async (req: CustomRequest, res:Response) => {
                 }
             })
             await SendMail({
-                from: process.env.EMAIL,
-                to: email,
-                subject: `${document?.user.name} shared a document with you with ${permission} access`,
-                text: `Hi ${user.name}, You can access the document here: ${process.env.LINK}/document/${documentId}`
+                from: `Docify <${process.env.EMAIL}>` as string,
+                to: email as string,
+                subject: `${document?.user.name} updated your access to "${document?.title}"`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #333;">Access Updated 🔄</h2>
+                        <p style="color: #666; font-size: 16px;">
+                            Hi ${user.name},
+                        </p>
+                        <p style="color: #666; font-size: 16px;">
+                            <strong>${document?.user.name}</strong> has updated your access to the document <strong>"${document?.title}"</strong>.
+                        </p>
+                        <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                            <p style="margin: 0; color: #374151; font-size: 14px;">
+                                <strong>New Permission Level:</strong> <span style="color: #4F46E5; text-transform: uppercase;">${permission}</span>
+                            </p>
+                        </div>
+                        <div style="margin: 30px 0;">
+                            <a href="${process.env.LINK}/document/${documentId}" 
+                               style="background-color: #4F46E5; color: white; padding: 12px 30px; 
+                                      text-decoration: none; border-radius: 5px; display: inline-block;">
+                                Open Document
+                            </a>
+                        </div>
+                        <p style="color: #999; font-size: 12px;">
+                            You're receiving this email because someone shared a document with you on Docify.
+                        </p>
+                    </div>
+                `,
+                text: `Hi ${user.name}, ${document?.user.name} updated your access to "${document?.title}" with ${permission} permission. You can access the document here: ${process.env.LINK}/document/${documentId}`
             })
         }
         await prisma.documentuser.create({
@@ -221,10 +248,42 @@ export const sharedocument = async (req: CustomRequest, res:Response) => {
             }
         })
         await SendMail({
-                from: process.env.EMAIL,
-                to: email,
-                subject: `${document?.user.name} shared a document with you with ${permission} access`,
-                text: `Hi ${user.name}, You can access the document here: ${process.env.LINK}/document/${documentId}`
+                from: `Docify <${process.env.EMAIL}>` as string,
+                to: email as string,
+                subject: `${document?.user.name} shared "${document?.title}" with you`,
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                        <h2 style="color: #333;">Document Shared With You 📄</h2>
+                        <p style="color: #666; font-size: 16px;">
+                            Hi ${user.name},
+                        </p>
+                        <p style="color: #666; font-size: 16px;">
+                            <strong>${document?.user.name}</strong> has shared a document with you on Docify!
+                        </p>
+                        <div style="background-color: #f3f4f6; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                            <p style="margin: 0 0 10px 0; color: #111827; font-size: 18px; font-weight: bold;">
+                                ${document?.title}
+                            </p>
+                            <p style="margin: 0; color: #374151; font-size: 14px;">
+                                <strong>Permission Level:</strong> <span style="color: #4F46E5; text-transform: uppercase;">${permission}</span>
+                            </p>
+                        </div>
+                        <div style="margin: 30px 0;">
+                            <a href="${process.env.LINK}/document/${documentId}" 
+                               style="background-color: #4F46E5; color: white; padding: 12px 30px; 
+                                      text-decoration: none; border-radius: 5px; display: inline-block;">
+                                Open Document
+                            </a>
+                        </div>
+                        <p style="color: #999; font-size: 14px;">
+                            Start collaborating now!
+                        </p>
+                        <p style="color: #999; font-size: 12px;">
+                            You're receiving this email because someone shared a document with you on Docify.
+                        </p>
+                    </div>
+                `,
+                text: `Hi ${user.name}, ${document?.user.name} shared a document "${document?.title}" with you with ${permission} access. You can access the document here: ${process.env.LINK}/document/${documentId}`
         })
         return res.status(200).json({message: "Document shared successfully"})
 
