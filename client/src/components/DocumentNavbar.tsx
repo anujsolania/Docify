@@ -132,7 +132,7 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
             <ActiveUsersDiv otherUsers={otherUsers} setShowActiveUsersPopUp={setShowActiveUsersPopUp} triggerRef={triggerRef} />
             </>
             ) :
-            (<div className="flex sm:hidden items-center" >
+            (otherUsers.length > 0 && <div className="flex sm:hidden items-center" >
               <button
               title={String(otherUsers.length > 1 ? otherUsers.length + " viewers" : otherUsers.length + " viewer")}
               onClick={() => setShowActiveUsersPopUp(!showActiveUsersPopUp)}

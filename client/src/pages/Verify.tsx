@@ -36,7 +36,7 @@ function Verify() {
 
   return (
     <div className="h-screen w-screen flex flex-col justify-center items-center gap-6" >
-        <h1 className="text-5xl font-bold" >Check your inbox</h1>
+        <h1 className="text-center text-4xl font-bold" >Check your inbox and spam folder</h1>
         <p className="text-gray-500 text-lg w-[480px] sm:w-[550px] text-center" >We are glad, that you’re with us ? We’ve sent you a verification link to your email address.</p>
         <a href="https://gmail.com" className="w-[300px] hover:bg-sky-700 bg-sky-600 rounded p-2.5 text-white text-center">Open Your Mail</a>
     </div>
