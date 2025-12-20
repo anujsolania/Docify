@@ -16,6 +16,8 @@ const DocumentNavbar = () => {
 //   const[isOpen,setisOpen] = useState(false)
 const debounce = useRef<ReturnType<typeof setTimeout> | null> (null)
 
+ const permissionOfuser = useStore((state) => state.permissionOfuser)
+
 const showShare = useStore((state) => state.showShare)
 const setshowShare = useStore((state) => state.setshowShare)
 // const[email,setEmail] = useState("")
@@ -84,11 +86,16 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
         <div className="flex gap-4" >
             <img src={image} onClick={() => navigate("/")} className="h-12 w-10 m-auto" ></img>
             <div className="p-2 flex flex-col gap-1" >
-                <input placeholder="Unititled document" value={title} onChange={(e) => {
-                    const newTitle = e.target.value
-                    setTitle(newTitle)
-                    dataTobackend(newTitle)
-                }} ></input>
+                <input 
+                    placeholder="Unititled document" 
+                    value={title} 
+                    disabled={permissionOfuser === "VIEW"}
+                    onChange={(e) => {
+                        const newTitle = e.target.value
+                        setTitle(newTitle)
+                        dataTobackend(newTitle)
+                    }} 
+                ></input>
                 <div className="flex gap-1" >
                     <button className="hover:bg-gray-100 rounded-lg text-sm font-medium p-1.5" >File</button>
                     <button className="hover:bg-gray-100 rounded-lg text-sm font-medium p-1.5">Edit</button>
