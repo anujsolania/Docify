@@ -27,6 +27,9 @@ type StoreState = {
   activeUsers: { userId: number; userEmail: string }[]
   setActiveUsers: (users: { userId: number; userEmail: string }[] | ((prev: { userId: number; userEmail: string }[]) => { userId: number; userEmail: string }[])) => void
 
+  editingTitle: { userId: number; userEmail: string } | null
+  setEditingTitle: (user: { userId: number; userEmail: string } | null) => void
+
   token: string | null
   user: any
   setAuth: (token: string, user: any) => void
@@ -80,6 +83,9 @@ export const useStore = create<StoreState>((set,get) => ({
     setActiveUsers: (users) => set((state) => ({
       activeUsers: typeof users === 'function' ? users(state.activeUsers) : users
     })),
+
+    editingTitle: null,
+    setEditingTitle: (user) => set({ editingTitle: user }),
 
     //AUTH STUFF
     token: sessionStorage.getItem("token"),

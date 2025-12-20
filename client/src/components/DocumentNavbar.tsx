@@ -8,6 +8,7 @@ import { jwtDecode } from "jwt-decode"
 import type { TokenPayload } from '../interfaces/interfaces'
 import { getColorForUser } from "../store/colorLogic"
 import ActiveUsersDiv from "../store/ActiveUsersDiv"
+import { io, Socket } from "socket.io-client"
 
 
 const DocumentNavbar = () => {
@@ -15,6 +16,7 @@ const DocumentNavbar = () => {
 //   const[position,setPosition] = useState({top:0, left:0})
 //   const[isOpen,setisOpen] = useState(false)
 const debounce = useRef<ReturnType<typeof setTimeout> | null> (null)
+const socketRef = useRef<Socket | null>(null)
 
  const permissionOfuser = useStore((state) => state.permissionOfuser)
 
@@ -26,7 +28,8 @@ const setshowShare = useStore((state) => state.setshowShare)
 const title = useStore((state) => state.title)
 const setTitle = useStore((state) => state.setTitle)
 
-
+const editingTitle = useStore((state) => state.editingTitle)
+const setEditingTitle = useStore((state) => state.setEditingTitle)
 
 const activeUsers = useStore((state) => state.activeUsers)
 
@@ -56,7 +59,55 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
     })()
   },[])
 
+  // Socket setup for real-time title
+  useEffect(() => {
+    socketRef.current = io(import.meta.env.VITE_URL, {
+      auth: {
+        token: token,
+        documentId: documentId
+      }
+    })
+
+    const socket = socketRef.current
+
+    socket.on("connect", () => {
+      console.log("Title socket connected:", socket.id)
+    })
+
+    // Receive title changes from other users
+    socket.on("receive-title-change", (newTitle: string) => {
+      setTitle(newTitle)
+    })
+
+    // Receive title editing status
+    socket.on("title-edit-start", (user: { userId: number; userEmail: string }) => {
+      if (user.userId !== decodedToken.id) {
+        setEditingTitle(user)
+      }
+    })
+
+    socket.on("title-edit-end", () => {
+      setEditingTitle(null)
+    })
+
+    return () => {
+      socket.off("receive-title-change")
+      socket.off("title-edit-start")
+      socket.off("title-edit-end")
+      socket.disconnect()
+      setEditingTitle(null)
+    }
+  }, [documentId, token])
+
   const dataTobackend = async (newTitle: string) => {
+    if (permissionOfuser === "VIEW") return;
+    
+    // Emit to other users immediately (real-time)
+    if (socketRef.current) {
+      socketRef.current.emit("title-change", newTitle)
+    }
+    
+    // Debounced save to DB
     if (debounce.current) clearTimeout(debounce.current)
     try {
         debounce.current = setTimeout(() => {
@@ -86,16 +137,40 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
         <div className="flex gap-4" >
             <img src={image} onClick={() => navigate("/")} className="h-12 w-10 m-auto" ></img>
             <div className="p-2 flex flex-col gap-1" >
-                <input 
-                    placeholder="Unititled document" 
-                    value={title} 
-                    disabled={permissionOfuser === "VIEW"}
-                    onChange={(e) => {
-                        const newTitle = e.target.value
-                        setTitle(newTitle)
-                        dataTobackend(newTitle)
-                    }} 
-                ></input>
+                <div className="relative">
+                    <input 
+                        placeholder="Unititled document" 
+                        value={title} 
+                        disabled={permissionOfuser === "VIEW"}
+                        onFocus={() => {
+                            if (permissionOfuser !== "VIEW" && socketRef.current) {
+                                socketRef.current.emit("title-edit-start", {
+                                    userId: decodedToken.id,
+                                    userEmail: decodedToken.email
+                                })
+                            }
+                        }}
+                        onBlur={() => {
+                            if (socketRef.current) {
+                                socketRef.current.emit("title-edit-end")
+                            }
+                        }}
+                        onChange={(e) => {
+                            const newTitle = e.target.value
+                            setTitle(newTitle)
+                            dataTobackend(newTitle)
+                        }} 
+                    ></input>
+                    {editingTitle && editingTitle.userId !== decodedToken.id && (
+                        <div className="absolute -bottom-5 bg-gray-200 p-0.5 left-0 text-xs text-blue-600 flex items-center gap-1">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="M12 20h9"></path>
+                                <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                            </svg>
+                            {editingTitle.userEmail} is editing the title
+                        </div>
+                    )}
+                </div>
                 <div className="flex gap-1" >
                     <button className="hover:bg-gray-100 rounded-lg text-sm font-medium p-1.5" >File</button>
                     <button className="hover:bg-gray-100 rounded-lg text-sm font-medium p-1.5">Edit</button>
