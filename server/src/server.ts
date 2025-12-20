@@ -52,6 +52,22 @@ io.on("connection", (socket) => {
 
     socket.join(documentId)
 
+    // In your socket.io server
+socket.on("title-change", (newTitle) => {
+    // Broadcast to all other users in the same document room
+    socket.to(documentId).emit("receive-title-change", newTitle)
+})
+
+socket.on("title-edit-start", (user) => {
+    // Broadcast to all other users that someone started editing
+    socket.to(documentId).emit("title-edit-start", user)
+})
+
+socket.on("title-edit-end", () => {
+    // Broadcast to all other users that editing ended
+    socket.to(documentId).emit("title-edit-end")
+})
+
     socket.on("send-changes", (delta) => {
         socket.to(documentId).emit("receive-changes",delta)
     })
