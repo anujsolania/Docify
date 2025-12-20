@@ -54,12 +54,12 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
     })()
   },[])
 
-  const dataTobackend = async () => {
+  const dataTobackend = async (newTitle: string) => {
     if (debounce.current) clearTimeout(debounce.current)
     try {
         debounce.current = setTimeout(() => {
            (async () => {
-                await AuthService.updatedocument(token!,{numericdocumentId,title})
+                await AuthService.updatedocument(token!,{numericdocumentId,title: newTitle})
             })()
         }, 1000)
     } catch (error) {
@@ -85,8 +85,9 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
             <img src={image} onClick={() => navigate("/")} className="h-12 w-10 m-auto" ></img>
             <div className="p-2 flex flex-col gap-1" >
                 <input placeholder="Unititled document" value={title} onChange={(e) => {
-                    setTitle(e.target.value)
-                    dataTobackend()
+                    const newTitle = e.target.value
+                    setTitle(newTitle)
+                    dataTobackend(newTitle)
                 }} ></input>
                 <div className="flex gap-1" >
                     <button className="hover:bg-gray-100 rounded-lg text-sm font-medium p-1.5" >File</button>

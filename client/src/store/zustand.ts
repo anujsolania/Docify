@@ -56,9 +56,9 @@ export const useStore = create<StoreState>((set,get) => ({
       console.error("Error fetching:", error)
     }},
     title: "",
-    setTitle: (titlee) => set({title: titlee}),
+    setTitle: (title) => set({title}),
     content: "",
-    setContent: (contentt) => set({content: contentt}),
+    setContent: (content) => set({content}),
     showShare: false,
     setshowShare: (valuee) => set({showShare: valuee}),
     permissionOfuser: "",
