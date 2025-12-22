@@ -1,16 +1,19 @@
 
-import Quill, { Delta, Range } from 'quill';
+import Quill from 'quill';
 import "quill/dist/quill.snow.css";
 import { useEffect, useRef } from "react";
 import "../css/quill.css"
 import { useStore } from '../store/zustand';
 import AuthService from '../services/user-service';
 import { useParams } from 'react-router-dom';
-import { io } from "socket.io-client"
 import { jwtDecode } from "jwt-decode";
 import QuillCursors from 'quill-cursors';
 import type { TokenPayload } from '../interfaces/interfaces';
 import { getColorForUser, releaseColorForUser } from '../store/colorLogic';
+// Yjs imports for CRDT-based collaborative editing
+import * as Y from 'yjs';
+import { QuillBinding } from 'y-quill';
+import { WebsocketProvider } from 'y-websocket';
 Quill.register('modules/cursors', QuillCursors);
 
 const toolbarOptions = [
@@ -41,9 +44,10 @@ const QuillEditor = () => {
   const divRef = useRef<HTMLDivElement | null>(null)
   const quillRef = useRef<Quill | null>(null)
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null)
-  
-  // const[quill,setQuill] = useState<Quill | null>()
-  // const[socket,setSocket] = useState<Socket | null >()
+  // Yjs refs - shared document and WebSocket provider
+  const ydocRef = useRef<Y.Doc | null>(null)
+  const providerRef = useRef<WebsocketProvider | null>(null)
+  const bindingRef = useRef<QuillBinding | null>(null)
 
   const {documentId} = useParams()
   const numericdocumentId = Number(documentId)
@@ -52,11 +56,11 @@ const QuillEditor = () => {
 
   const content = useStore((state) => state.content)
 
-  // const activeUsers = useStore((state) => state.activeUsers)
   const setActiveUsers = useStore((state) => state.setActiveUsers)
 
   const permissionOfuser = useStore((state) => state.permissionOfuser)
 
+  // Save document to backend database periodically
   const dataTobackend = () => {
     if (debounce.current) clearTimeout(debounce.current)
     try {
@@ -65,7 +69,7 @@ const QuillEditor = () => {
         const html = quillRef.current?.root.innerHTML as string
         await AuthService.updatedocument(token!, {numericdocumentId,content:html}) as any 
         })()
-      },1000)
+      },2000) // Increased to 2s since Yjs handles real-time sync
     } catch (error) {
       console.error(error)
       alert("error while sending data to backend")
@@ -73,110 +77,106 @@ const QuillEditor = () => {
   }
 
   useEffect(() => {
-    // Wait for permission to be loaded before initializing Quill
+    // Wait for permission to be loaded before initializing
     if (!permissionOfuser) return;
 
+    // Initialize Quill editor
     if (!quillRef.current) {
-      quillRef.current = new Quill(divRef.current!,{
+      quillRef.current = new Quill(divRef.current!, {
         theme: "snow",
         modules: {
           toolbar: permissionOfuser === "VIEW" ? false : toolbarOptions,
           cursors: true,
-          // cursors: {
-          // transformOnTextChange: true
-        // }
-        }})
-        console.log("PERMISSION:",permissionOfuser)
+        }
+      })
+      console.log("PERMISSION:", permissionOfuser)
     }
 
-    const socketServer = io(import.meta.env.VITE_URL,{
-      auth: {
-        token: token,
-        documentId: documentId
+    // Create Yjs document - this holds the shared state
+    ydocRef.current = new Y.Doc()
+    
+    // Get the 'quill' type from Yjs doc - this is the shared text structure
+    const ytext = ydocRef.current.getText('quill')
+
+    // Initialize WebSocket provider for real-time sync
+    // Converts ws:// or wss:// from http:// or https://
+    const wsUrl = import.meta.env.VITE_URL.replace(/^http/, 'ws')
+    
+    providerRef.current = new WebsocketProvider(
+      wsUrl,
+      `document-${documentId}`, // Room name
+      ydocRef.current,
+      {
+        params: { 
+          token: token || '',
+          documentId: documentId || ''
+        }
       }
+    )
+
+    // Awareness API - tracks user presence and cursors automatically
+    const awareness = providerRef.current.awareness
+    
+    // Set local user info for awareness
+    awareness.setLocalStateField('user', {
+      name: decodedToken.email,
+      color: getColorForUser(String(decodedToken.id)),
+      userId: decodedToken.id
     })
 
-    socketServer.on("connect", () => {
-    console.log("Connected to server! Socket ID:", socketServer.id)
-    })
+    // Bind Quill editor to Yjs document
+    // QuillBinding syncs Quill changes to Yjs and vice versa
+    bindingRef.current = new QuillBinding(ytext, quillRef.current, awareness)
 
-    //get cursor instance
-    const cursors = quillRef.current.getModule("cursors") as any
+    // Load initial content from database only once
+    if (content && ytext.length === 0) {
+      // Disable observer temporarily to avoid triggering sync
+      const delta = quillRef.current.clipboard.convert({ html: content })
+      ytext.applyDelta(delta as any)
+    }
 
-    const handleChange = (delta: Delta,_oldDelta: Delta, source: string) => {
-      if (permissionOfuser === "VIEW") return;
-      if (source !== "user") return
-      socketServer.emit("send-changes",delta)
+    // Track active users via awareness
+    const handleAwarenessChange = () => {
+      const states = awareness.getStates()
+      const users: { userId: number; userEmail: string }[] = []
+      
+      states.forEach((state, clientId) => {
+        if (state.user && clientId !== awareness.clientID) {
+          users.push({
+            userId: state.user.userId,
+            userEmail: state.user.name
+          })
+        }
+      })
+      
+      setActiveUsers(users)
+    }
 
-      const range = quillRef.current!.getSelection()
-      if (range) {
-        socketServer.emit("cursor-change",{
-          userId: decodedToken.id,
-          userEmail: decodedToken.email,
-          range
-        })
-      }
+    awareness.on('change', handleAwarenessChange)
+
+    // Save to backend database periodically
+    const handleTextChange = () => {
+      if (permissionOfuser === "VIEW") return
       dataTobackend()
     }
 
-    //send changes
-    quillRef.current.on("text-change",handleChange)
+    quillRef.current.on('text-change', handleTextChange)
 
-    const receiveChange = (delta: Delta) => {
-      quillRef.current!.updateContents(delta)
-    }
-    //receive changes
-    socketServer.on("receive-changes",receiveChange)
-
-    const handleSelectionChange = (range: Range,_oldRange: Range, source: string) => {
-      if (source !== "user") return
-      socketServer.emit("cursor-change",{
-        // userId: AuthService.getCurrentUser().id,
-        // username: AuthService.getCurrentUser().username
-        userId: decodedToken.id,
-        userEmail: decodedToken.email,
-        range
-      })
-    }
-
-    //send cursor changes
-    quillRef.current.on("selection-change", handleSelectionChange)
-
-    //receive cursor changes
-    socketServer.on("cursor-update",({ userId, userEmail, range }) => {
-      if (range === null) {
-        cursors.removeCursor(userId)
-        return
-      }
-      if (!cursors.cursors[userId]) {
-        const userColor = getColorForUser(String(userId));
-        cursors.createCursor(userId, userEmail, userColor)
-      }
-      cursors.moveCursor(userId, range)
-    })
-
-    //send user that joined
-    socketServer.emit("join-document", {
-      userId: decodedToken.id,
-      userEmail: decodedToken.email
-    })
-
-    //receive active users list updates
-    socketServer.on("active-users-update", (users: { userId: number; userEmail: string }[]) => {
-      setActiveUsers(users);
-    });
-
+    // Cleanup
     return () => {
-      quillRef.current?.off("text-change",dataTobackend)
-      socketServer.off("receive-changes",receiveChange)
-      socketServer.off("active-users-update")
-      socketServer.disconnect()
-      releaseColorForUser(String(decodedToken.id));
+      awareness.off('change', handleAwarenessChange)
+      quillRef.current?.off('text-change', handleTextChange)
+      
+      // Destroy Yjs bindings and provider
+      bindingRef.current?.destroy()
+      providerRef.current?.destroy()
+      ydocRef.current?.destroy()
+      
+      releaseColorForUser(String(decodedToken.id))
       if (debounce.current) clearTimeout(debounce.current)
-      // Clear active users when component unmounts
-      setActiveUsers([]);
+      setActiveUsers([])
     }
-  },[permissionOfuser])
+  }, [permissionOfuser])
 
   useEffect(() => {
     if (permissionOfuser === "VIEW") {
