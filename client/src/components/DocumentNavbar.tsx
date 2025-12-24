@@ -194,7 +194,7 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
               const color = getColorForUser(String(user.userId))
               return (
               <button 
-              key={user.userId} 
+              key={user.clientId} 
               title={user.userEmail}
               style={{ backgroundColor: color }}
               className="h-9 w-9 rounded-full text-white text-xl m-auto border border-blue-600">{user.userEmail[0]}</button>

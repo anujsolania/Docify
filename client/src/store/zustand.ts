@@ -24,8 +24,8 @@ type StoreState = {
   setColorOfUser: (userId: number, color: string) => void
   removeColorOfUser: (userId: number) => void
 
-  activeUsers: { userId: number; userEmail: string }[]
-  setActiveUsers: (users: { userId: number; userEmail: string }[] | ((prev: { userId: number; userEmail: string }[]) => { userId: number; userEmail: string }[])) => void
+  activeUsers: { userId: number; userEmail: string; clientId: number }[]
+  setActiveUsers: (users: { userId: number; userEmail: string; clientId: number }[] | ((prev: { userId: number; userEmail: string; clientId: number }[]) => { userId: number; userEmail: string; clientId: number }[])) => void
 
   editingTitle: { userId: number; userEmail: string } | null
   setEditingTitle: (user: { userId: number; userEmail: string } | null) => void

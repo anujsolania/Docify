@@ -1,0 +1,15 @@
+.view-only-banner {
+  background-color: #f0f0f0;
+  padding: 12px 20px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #d0d0d0;
+}
+
+.view-only-banner-text {
+  color: #666;
+  font-weight: 500;
+}

@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { getColorForUser } from "./colorLogic"
 
 interface ActiveUsersDivProps {
-  otherUsers: { userId: number; userEmail: string }[];
+  otherUsers: { userId: number; userEmail: string; clientId: number }[];
   setShowActiveUsersPopUp: (value: boolean) => void;
   triggerRef: React.RefObject<HTMLDivElement | null>;
 }
@@ -40,7 +40,7 @@ const ActiveUsersDiv = ({otherUsers , setShowActiveUsersPopUp, triggerRef }: Act
       </p>
 
       {otherUsers?.map(user => (
-        <div key={user.userId} className="flex items-center gap-2 mt-2">
+        <div key={user.clientId} className="flex items-center gap-2 mt-2">
           <div
             className="h-8 w-8 rounded-full flex items-center justify-center text-white"
             style={{ backgroundColor: getColorForUser(String(user.userId)) }}

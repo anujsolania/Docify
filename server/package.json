@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn src/server.ts",
+    "dev": "ts-node-dev --respawn src/yjs-server.ts",
     "build": "tsc",
     "postinstall": "prisma generate",
-    "start": "node dist/server.js"
+    "start": "node dist/yjs-server.js"
   },
   "keywords": [],
   "author": "",

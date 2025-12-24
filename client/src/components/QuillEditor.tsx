@@ -1,8 +1,9 @@
 
 import Quill from 'quill';
 import "quill/dist/quill.snow.css";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import "../css/quill.css"
+import "../css/viewonly.css"
 import { useStore } from '../store/zustand';
 import AuthService from '../services/user-service';
 import { useParams } from 'react-router-dom';
@@ -44,6 +45,7 @@ const QuillEditor = () => {
   const divRef = useRef<HTMLDivElement | null>(null)
   const quillRef = useRef<Quill | null>(null)
   const debounce = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const contentLoaded = useRef(false) // Track if content has been loaded to prevent duplicates
   // Yjs refs - shared document and WebSocket provider
   const ydocRef = useRef<Y.Doc | null>(null)
   const providerRef = useRef<WebsocketProvider | null>(null)
@@ -61,20 +63,20 @@ const QuillEditor = () => {
   const permissionOfuser = useStore((state) => state.permissionOfuser)
 
   // Save document to backend database periodically
-  const dataTobackend = () => {
+  const dataTobackend = useCallback(() => {
     if (debounce.current) clearTimeout(debounce.current)
     try {
       debounce.current = setTimeout(() => {
         (async () => {
         const html = quillRef.current?.root.innerHTML as string
-        await AuthService.updatedocument(token!, {numericdocumentId,content:html}) as any 
+        await AuthService.updatedocument(token!, {numericdocumentId,content:html})
         })()
       },2000) // Increased to 2s since Yjs handles real-time sync
     } catch (error) {
       console.error(error)
       alert("error while sending data to backend")
     }
-  }
+  }, [token, numericdocumentId])
 
   useEffect(() => {
     // Wait for permission to be loaded before initializing
@@ -127,28 +129,38 @@ const QuillEditor = () => {
     // QuillBinding syncs Quill changes to Yjs and vice versa
     bindingRef.current = new QuillBinding(ytext, quillRef.current, awareness)
 
-    // Load initial content from database only once
+    // Load initial content from database only once when Yjs document is empty
+    // This should only happen on first load or when Yjs server restarted
     if (content && ytext.length === 0) {
-      // Disable observer temporarily to avoid triggering sync
       const delta = quillRef.current.clipboard.convert({ html: content })
-      ytext.applyDelta(delta as any)
+      // @ts-expect-error - Delta type mismatch between Quill and Yjs
+      ytext.applyDelta(delta)
+      contentLoaded.current = true // Mark as loaded to prevent duplicate loading
+    } else if (ytext.length > 0) {
+      // Yjs already has content (from sync), don't load from DB
+      contentLoaded.current = true
     }
 
     // Track active users via awareness
     const handleAwarenessChange = () => {
       const states = awareness.getStates()
-      const users: { userId: number; userEmail: string }[] = []
+      const userMap = new Map<number, { userId: number; userEmail: string; clientId: number }>()
       
       states.forEach((state, clientId) => {
         if (state.user && clientId !== awareness.clientID) {
-          users.push({
-            userId: state.user.userId,
-            userEmail: state.user.name
-          })
+          const userId = state.user.userId
+          // Only keep one entry per userId (in case same user has multiple tabs)
+          if (!userMap.has(userId)) {
+            userMap.set(userId, {
+              userId: userId,
+              userEmail: state.user.name,
+              clientId: clientId
+            })
+          }
         }
       })
       
-      setActiveUsers(users)
+      setActiveUsers(Array.from(userMap.values()))
     }
 
     awareness.on('change', handleAwarenessChange)
@@ -166,8 +178,12 @@ const QuillEditor = () => {
       awareness.off('change', handleAwarenessChange)
       quillRef.current?.off('text-change', handleTextChange)
       
+      // Clear local awareness state before destroying
+      awareness.setLocalState(null)
+      
       // Destroy Yjs bindings and provider
       bindingRef.current?.destroy()
+      providerRef.current?.disconnect()
       providerRef.current?.destroy()
       ydocRef.current?.destroy()
       
@@ -175,7 +191,7 @@ const QuillEditor = () => {
       if (debounce.current) clearTimeout(debounce.current)
       setActiveUsers([])
     }
-  }, [permissionOfuser])
+  }, [permissionOfuser, documentId, token, decodedToken.email, decodedToken.id, content, setActiveUsers, dataTobackend])
 
   useEffect(() => {
     if (permissionOfuser === "VIEW") {
@@ -183,33 +199,19 @@ const QuillEditor = () => {
     } 
   },[permissionOfuser])
 
-  const contentLoaded = useRef(false);
-  useEffect(() => {
-    if (quillRef.current && content && !contentLoaded.current) {
-        quillRef.current.clipboard.dangerouslyPasteHTML(content)
-        contentLoaded.current = true;
-    }
-  },[content])
+  // This effect is removed - content loading is now handled in the main useEffect above
+  // to prevent duplicate content loading
 
 
   return (
     <>
      {permissionOfuser === "VIEW" && (
-       <div style={{
-         backgroundColor: '#f0f0f0',
-         padding: '12px 20px',
-         borderRadius: '4px',
-         marginBottom: '10px',
-         display: 'flex',
-         alignItems: 'center',
-         gap: '10px',
-         border: '1px solid #d0d0d0'
-       }}>
+       <div className="view-only-banner">
          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
            <circle cx="12" cy="12" r="3"></circle>
          </svg>
-         <span style={{ color: '#666', fontWeight: '500' }}>View Only Mode - You cannot edit this document</span>
+         <span className="view-only-banner-text">View Only Mode - You cannot edit this document</span>
        </div>
      )}
      <div ref={divRef} ></div>
