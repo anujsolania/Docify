@@ -26,6 +26,7 @@
     "tailwindcss": "^4.1.11",
     "y-protocols": "^1.0.7",
     "y-quill": "^1.0.0",
+    "y-websocket": "^3.0.0",
     "yjs": "^13.6.28",
     "zustand": "^5.0.8"
   },

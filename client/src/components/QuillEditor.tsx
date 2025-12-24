@@ -99,12 +99,11 @@ const QuillEditor = () => {
     const ytext = ydocRef.current.getText('quill')
 
     // Initialize WebSocket provider for real-time sync
-    // Converts ws:// or wss:// from http:// or https://
     const wsUrl = import.meta.env.VITE_URL.replace(/^http/, 'ws')
     
     providerRef.current = new WebsocketProvider(
       wsUrl,
-      `document-${documentId}`, // Room name
+      `document-${documentId}`,
       ydocRef.current,
       {
         params: { 
