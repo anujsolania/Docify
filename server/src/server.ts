@@ -35,7 +35,7 @@ io.on("connection", (socket) => {
     
     try {
         jwt.verify(token, process.env.JWT_KEY as string)
-    } catch (err) {
+    } catch (err: any) {
         console.log("Socket.IO auth failed:", err.message)
         return socket.disconnect()
     }
