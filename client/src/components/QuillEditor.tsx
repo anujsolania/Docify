@@ -125,9 +125,39 @@ const QuillEditor = () => {
       userId: decodedToken.id
     })
 
+    // Get the cursors module
+    const cursors = quillRef.current.getModule('cursors') as QuillCursors
+
     // Bind Quill editor to Yjs document
     // QuillBinding syncs Quill changes to Yjs and vice versa
     bindingRef.current = new QuillBinding(ytext, quillRef.current, awareness)
+
+    // Update cursors when awareness changes
+    const updateCursors = () => {
+      const states = awareness.getStates()
+      states.forEach((state, clientId) => {
+        if (state.user && clientId !== awareness.clientID) {
+          const user = state.user
+          cursors.createCursor(clientId.toString(), user.name, user.color)
+          
+          // Update cursor position if available
+          if (state.cursor) {
+            cursors.moveCursor(clientId.toString(), state.cursor)
+          }
+        }
+      })
+      
+      // Remove cursors for disconnected users
+      const currentCursors = cursors.cursors()
+      currentCursors.forEach((cursor: any) => {
+        const cursorClientId = parseInt(cursor.id)
+        if (!states.has(cursorClientId)) {
+          cursors.removeCursor(cursor.id)
+        }
+      })
+    }
+
+    awareness.on('change', updateCursors)
 
     // Load initial content from database only once when Yjs document is empty
     // This should only happen on first load or when Yjs server restarted
@@ -176,6 +206,7 @@ const QuillEditor = () => {
     // Cleanup
     return () => {
       awareness.off('change', handleAwarenessChange)
+      awareness.off('change', updateCursors)
       quillRef.current?.off('text-change', handleTextChange)
       
       // Clear local awareness state before destroying
