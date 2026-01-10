@@ -74,6 +74,9 @@ const getYDoc = (docname: string): WSSharedDoc => {
             conns: new Map()
         }
         docs.set(docname, doc)
+
+        // SET UP SYNC AND AWARENESS BROADCASTING - ADD THIS LINE:
+        setupDocumentSync(doc)
         
         // Load initial content from database
         loadDocFromDB(docname, ydoc)
