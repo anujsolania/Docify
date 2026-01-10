@@ -118,58 +118,35 @@ const QuillEditor = () => {
     // Awareness API - tracks user presence and cursors automatically
     const awareness = providerRef.current.awareness
     
-    // Set local user info for awareness
-    awareness.setLocalStateField('user', {
-      name: decodedToken.email,
-      color: getColorForUser(String(decodedToken.id)),
-      userId: decodedToken.id
+    // Bind Quill editor to Yjs document with cursors module
+    // QuillBinding automatically syncs Quill changes to Yjs and handles cursors via awareness
+    const cursorsModule = quillRef.current.getModule('cursors')
+    bindingRef.current = new QuillBinding(ytext, quillRef.current, awareness, {
+      cursors: cursorsModule
     })
 
-    // Get the cursors module
-    const cursors = quillRef.current.getModule('cursors') as QuillCursors
-
-    // Bind Quill editor to Yjs document
-    // QuillBinding syncs Quill changes to Yjs and vice versa
-    bindingRef.current = new QuillBinding(ytext, quillRef.current, awareness)
-
-    // Update cursors when awareness changes
-    const updateCursors = () => {
-      const states = awareness.getStates()
-      states.forEach((state, clientId) => {
-        if (state.user && clientId !== awareness.clientID) {
-          const user = state.user
-          cursors.createCursor(clientId.toString(), user.name, user.color)
-          
-          // Update cursor position if available
-          if (state.cursor) {
-            cursors.moveCursor(clientId.toString(), state.cursor)
-          }
-        }
+    // Wait for provider to sync, then assign color and load content
+    providerRef.current.once('synced', () => {
+      console.log("Provider synced. ytext length:", ytext.length)
+      
+      // NOW assign color after syncing with other users
+      const userColor = getColorForUser(String(decodedToken.id), awareness)
+      console.log("Setting user color for", decodedToken.email, ":", userColor)
+      
+      awareness.setLocalStateField('user', {
+        name: decodedToken.email,
+        color: userColor,
+        userId: decodedToken.id
       })
       
-      // Remove cursors for disconnected users
-      const currentCursors = cursors.cursors()
-      currentCursors.forEach((cursor: any) => {
-        const cursorClientId = parseInt(cursor.id)
-        if (!states.has(cursorClientId)) {
-          cursors.removeCursor(cursor.id)
-        }
-      })
-    }
-
-    awareness.on('change', updateCursors)
-
-    // Load initial content from database only once when Yjs document is empty
-    // This should only happen on first load or when Yjs server restarted
-    if (content && ytext.length === 0) {
-      const delta = quillRef.current.clipboard.convert({ html: content })
-      // @ts-expect-error - Delta type mismatch between Quill and Yjs
-      ytext.applyDelta(delta)
-      contentLoaded.current = true // Mark as loaded to prevent duplicate loading
-    } else if (ytext.length > 0) {
-      // Yjs already has content (from sync), don't load from DB
-      contentLoaded.current = true
-    }
+      // Load initial content from database only if Yjs document is empty after sync
+      if (content && ytext.length === 0 && !contentLoaded.current) {
+        console.log("Loading content from DB into Quill", content)
+        const delta = quillRef.current!.clipboard.convert({ html: content })
+        quillRef.current!.setContents(delta, 'silent')
+        contentLoaded.current = true
+      }
+    })
 
     // Track active users via awareness
     const handleAwarenessChange = () => {
@@ -206,7 +183,6 @@ const QuillEditor = () => {
     // Cleanup
     return () => {
       awareness.off('change', handleAwarenessChange)
-      awareness.off('change', updateCursors)
       quillRef.current?.off('text-change', handleTextChange)
       
       // Clear local awareness state before destroying
