@@ -6,7 +6,6 @@ import { useNavigate, useParams } from "react-router-dom"
 import ShowShare from "./ShowShare"
 import { jwtDecode } from "jwt-decode"
 import type { TokenPayload } from '../interfaces/interfaces'
-import { getColorForUser } from "../store/colorLogic"
 import ActiveUsersDiv from "../store/ActiveUsersDiv"
 import { io, Socket } from "socket.io-client"
 
@@ -178,7 +177,7 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
                     <button className="hover:bg-gray-100 rounded-lg text-sm font-medium p-1.5" >Insert</button>
                     <button className="hover:bg-gray-100 rounded-lg text-sm font-medium p-1.5 hidden md:inline" >Format</button>
                     <button className="hover:bg-gray-100 rounded-lg text-sm font-medium p-1.5 hidden md:inline" >Tools</button>
-                    <button className="hover:bg-gray-100 rounded-lg text-sm font-medium p-1.5 hidden md:inline" >Add-ons</button>
+                    {/* <button className="hover:bg-gray-100 rounded-lg text-sm font-medium p-1.5 hidden md:inline" >Add-ons</button> */}
                     <button className="hover:bg-gray-100 rounded-lg text-sm font-medium p-1.5 hidden md:inline" >Help</button>
                 </div>
             </div>
@@ -191,12 +190,11 @@ const otherUsers = activeUsers.filter(user => user.userId !== decodedToken.id)
             onClick={() => setShowActiveUsersPopUp(!showActiveUsersPopUp)}
             className="hidden sm:flex gap-2" >
           {otherUsers?.map((user) => {
-              const color = getColorForUser(String(user.userId))
               return (
               <button 
               key={user.clientId} 
               title={user.userEmail}
-              style={{ backgroundColor: color }}
+              style={{ backgroundColor: user.color }}
               className="h-9 w-9 rounded-full text-white text-xl m-auto border border-blue-600">{user.userEmail[0]}</button>
               )
             })}

@@ -2,11 +2,11 @@
 const COLOR_POOL = [
   "#FF3B30", // Vivid Red
   "#FF9500", // Orange
+  "#FFCC00", // Strong Yellow
   "#34C759", // Bright Green
   "#00C7BE", // Aqua
   "#32ADE6", // Sky Blue
   "#007AFF", // Vivid Blue
-  "#FFCC00", // Strong Yellow
   "#5856D6", // Purple
   "#AF52DE", // Violet
   "#FF2D55"  // Pink Red
@@ -14,7 +14,7 @@ const COLOR_POOL = [
 
 const userColorMap = new Map<string, string>(); // userId -> color
 
-export const getColorForUser = (userId: string, awareness: any): string => {
+export const getColorForUser = (userId: string, awareness: any = null): string => {
   // If user already has a color assigned locally, return it
   if (userColorMap.has(userId)) return userColorMap.get(userId)!;
 

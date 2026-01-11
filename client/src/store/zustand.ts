@@ -24,11 +24,14 @@ type StoreState = {
   setColorOfUser: (userId: number, color: string) => void
   removeColorOfUser: (userId: number) => void
 
-  activeUsers: { userId: number; userEmail: string; clientId: number }[]
-  setActiveUsers: (users: { userId: number; userEmail: string; clientId: number }[] | ((prev: { userId: number; userEmail: string; clientId: number }[]) => { userId: number; userEmail: string; clientId: number }[])) => void
+  activeUsers: { userId: number; userEmail: string; clientId: number; color: string }[]
+  setActiveUsers: (users: { userId: number; userEmail: string; clientId: number; color: string }[] | ((prev: { userId: number; userEmail: string; clientId: number; color: string }[]) => { userId: number; userEmail: string; clientId: number; color: string }[])) => void
 
   editingTitle: { userId: number; userEmail: string } | null
   setEditingTitle: (user: { userId: number; userEmail: string } | null) => void
+
+  awareness: any | null
+  setAwareness: (awareness: any) => void
 
   token: string | null
   user: any
@@ -86,6 +89,9 @@ export const useStore = create<StoreState>((set,get) => ({
 
     editingTitle: null,
     setEditingTitle: (user) => set({ editingTitle: user }),
+
+    awareness: null,
+    setAwareness: (awareness) => set({ awareness }),
 
     //AUTH STUFF
     token: sessionStorage.getItem("token"),

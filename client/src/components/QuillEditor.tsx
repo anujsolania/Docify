@@ -59,6 +59,7 @@ const QuillEditor = () => {
   const content = useStore((state) => state.content)
 
   const setActiveUsers = useStore((state) => state.setActiveUsers)
+  const setAwareness = useStore((state) => state.setAwareness)
 
   const permissionOfuser = useStore((state) => state.permissionOfuser)
 
@@ -118,15 +119,15 @@ const QuillEditor = () => {
     // Awareness API - tracks user presence and cursors automatically
     const awareness = providerRef.current.awareness
     
+    // Store awareness in Zustand so other components can access it
+    setAwareness(awareness)
+    
     // Bind Quill editor to Yjs document with cursors module
     // QuillBinding automatically syncs Quill changes to Yjs and handles cursors via awareness
-    const cursorsModule = quillRef.current.getModule('cursors')
-    bindingRef.current = new QuillBinding(ytext, quillRef.current, awareness, {
-      cursors: cursorsModule
-    })
+    bindingRef.current = new QuillBinding(ytext, quillRef.current, awareness)
 
     // Wait for provider to sync, then assign color and load content
-    providerRef.current.once('synced', () => {
+    providerRef.current.once('sync', () => {
       console.log("Provider synced. ytext length:", ytext.length)
       
       // NOW assign color after syncing with other users
@@ -151,17 +152,18 @@ const QuillEditor = () => {
     // Track active users via awareness
     const handleAwarenessChange = () => {
       const states = awareness.getStates()
-      const userMap = new Map<number, { userId: number; userEmail: string; clientId: number }>()
+      const userMap = new Map<number, { userId: number; userEmail: string; clientId: number; color: string }>()
       
       states.forEach((state, clientId) => {
         if (state.user && clientId !== awareness.clientID) {
           const userId = state.user.userId
-          // Only keep one entry per userId (in case same user has multiple tabs)
-          if (!userMap.has(userId)) {
+          // Filter out the current user's old sessions (by userId, not just clientId)
+          if (userId !== decodedToken.id && !userMap.has(userId)) {
             userMap.set(userId, {
               userId: userId,
               userEmail: state.user.name,
-              clientId: clientId
+              clientId: clientId,
+              color: state.user.color || '#FF3B30' // Fallback to red if no color
             })
           }
         }
@@ -171,6 +173,9 @@ const QuillEditor = () => {
     }
 
     awareness.on('change', handleAwarenessChange)
+    
+    // Trigger initial awareness change to populate active users
+    handleAwarenessChange()
 
     // Save to backend database periodically
     const handleTextChange = () => {
@@ -197,8 +202,9 @@ const QuillEditor = () => {
       releaseColorForUser(String(decodedToken.id))
       if (debounce.current) clearTimeout(debounce.current)
       setActiveUsers([])
+      setAwareness(null)
     }
-  }, [permissionOfuser, documentId, token, decodedToken.email, decodedToken.id, content, setActiveUsers, dataTobackend])
+  }, [permissionOfuser, documentId, token, decodedToken.email, decodedToken.id, content, setActiveUsers, setAwareness, dataTobackend])
 
   useEffect(() => {
     if (permissionOfuser === "VIEW") {
